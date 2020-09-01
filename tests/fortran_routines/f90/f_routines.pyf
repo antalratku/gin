@@ -1,0 +1,74 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module qk15i__user__routines 
+    interface qk15i_user_interface 
+        subroutine f(tabsc1,ierr,fval1) ! in :f_routines:f_routines.f90:qk15i:unknown_interface
+            real :: tabsc1
+            integer :: ierr
+            real, intent(out) :: fval1
+        end subroutine f
+    end interface qk15i_user_interface
+end python module qk15i__user__routines
+python module f_routines ! in 
+    interface  ! in :f_routines
+        function r1mach(i) ! in :f_routines:f_routines.f90
+            integer :: i
+            integer :: cray1
+            real :: r1mach
+            common /d8mach/ cray1
+        end function r1mach
+        subroutine qpsrt(limit,last,maxerr,ermax,elist,iord,nrmax) ! in :f_routines:f_routines.f90
+            integer, intent(in, out) :: limit
+            integer, optional,check(len(elist)>=last),depend(elist), intent(in, out) :: last=len(elist)
+            integer, intent(in, out) :: maxerr
+            real, intent(in, out) :: ermax
+            real dimension(last), intent(in, out) :: elist
+            integer dimension(last),depend(last), intent(in, out) :: iord
+            integer, intent(in, out) :: nrmax
+        end subroutine qpsrt
+        subroutine qelg(n,epstab,result,abserr,res3la,nres) ! in :f_routines:f_routines.f90
+            integer, intent(in, out) :: n
+            real dimension(52), intent(in, out) :: epstab
+            real, intent(in, out) :: result
+            real, intent(in, out) :: abserr
+            real dimension(3), intent(in, out) :: res3la
+            integer, intent(in, out) :: nres
+        end subroutine qelg
+        subroutine qk15i(f,boun,inf,a,b,result,abserr,resabs,resasc,ierr) ! in :f_routines:f_routines.f90
+            use qk15i__user__routines
+            external f
+            real, intent(in) :: boun
+            integer, intent(in) :: inf
+            real, intent(in) :: a
+            real, intent(in) :: b
+            real, intent(out) :: result
+            real, intent(out) :: abserr
+            real, intent(out) :: resabs
+            real, intent(out) :: resasc
+            integer, intent(out) :: ierr
+        end subroutine qk15i
+        subroutine qagie(f,bound,inf,epsabs,epsrel,limit,result,abserr,neval,ier,alist,blist,rlist,elist,iord,last) ! in :f_routines:f_routines.f90
+		    use qk15i__user__routines
+            external f
+            real, intent(in) :: bound
+            integer, intent(in) :: inf
+            real, intent(in) :: epsabs
+            real, intent(in) :: epsrel
+            integer, intent(in) :: limit
+            real, intent(out) :: result
+            real, intent(out) :: abserr
+            integer, intent(out) :: neval
+            integer, intent(out) :: ier
+            real dimension(limit),depend(limit), intent(out) :: alist
+            real dimension(limit),depend(limit), intent(out) :: blist
+            real dimension(limit),depend(limit), intent(out) :: rlist
+            real dimension(limit),depend(limit), intent(out) :: elist
+            integer dimension(limit),depend(limit), intent(out) :: iord
+            integer, intent(out) :: last
+        end subroutine qagie
+    end interface 
+end python module f_routines
+
+! This file was auto-generated with f2py (version:2).
+! See http://cens.ioc.ee/projects/f2py2e/
