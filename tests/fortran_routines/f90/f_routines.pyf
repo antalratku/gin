@@ -10,6 +10,15 @@ python module qk15i__user__routines
         end subroutine f
     end interface qk15i_user_interface
 end python module qk15i__user__routines
+python module qk21__user__routines 
+    interface qk21_user_interface 
+        subroutine f(centr,ierr,fc) ! in :f_routines:f_routines.f90:qk21:unknown_interface
+            real :: centr
+            integer :: ierr
+            real, intent(out) :: fc
+        end subroutine f
+    end interface qk21_user_interface
+end python module qk21__user__routines
 python module f_routines ! in 
     interface  ! in :f_routines
         function r1mach(i) ! in :f_routines:f_routines.f90
@@ -67,6 +76,41 @@ python module f_routines ! in
             integer dimension(limit),depend(limit), intent(out) :: iord
             integer, intent(out) :: last
         end subroutine qagie
+        subroutine qk21(f,a,b,result,abserr,resabs,resasc,ierr) ! in :f_routines:f_routines.f90
+            use qk21__user__routines
+            external f
+            real, intent(in) :: a
+            real, intent(in) :: b
+            real, intent(out) :: result
+            real, intent(out) :: abserr
+            real, intent(out) :: resabs
+            real, intent(out) :: resasc
+            integer, intent(out) :: ierr
+        end subroutine qk21
+        subroutine qagpe(f,a,b,npts2,points,epsabs,epsrel,limit,result,abserr,neval,ier,alist,blist,rlist,elist,pts,iord,level,ndin,last) ! in :f_routines:f_routines.f90
+            use qk21__user__routines
+            external f
+            real, intent(in) :: a
+            real, intent(in) :: b
+            integer, intent(in) :: npts2
+            real dimension(npts2), intent(in) :: points
+            real, intent(in) :: epsabs
+            real, intent(in) :: epsrel
+            integer, intent(in) :: limit
+            real, intent(out) :: result
+            real, intent(out) :: abserr
+            integer, intent(out) :: neval
+            integer, intent(out) :: ier
+            real dimension(limit),depend(limit), intent(out) :: alist
+            real dimension(limit),depend(limit), intent(out) :: blist
+            real dimension(limit),depend(limit), intent(out) :: rlist
+            real dimension(limit),depend(limit), intent(out) :: elist
+            real dimension(npts2),depend(npts2), intent(out) :: pts
+            integer dimension(limit),depend(limit), intent(out) :: iord
+            integer dimension(limit),depend(limit), intent(out) :: level
+            integer dimension(npts2),depend(npts2), intent(out) :: ndin
+            integer, intent(out) :: last
+        end subroutine qagpe
     end interface 
 end python module f_routines
 
