@@ -29,11 +29,11 @@ python module f_routines ! in
         end function r1mach
         subroutine qpsrt(limit,last,maxerr,ermax,elist,iord,nrmax) ! in :f_routines:f_routines.f90
             integer, intent(in, out) :: limit
-            integer, optional,check(len(elist)>=last),depend(elist), intent(in, out) :: last=len(elist)
+            integer, intent(in, out) :: last
             integer, intent(in, out) :: maxerr
             real, intent(in, out) :: ermax
-            real dimension(last), intent(in, out) :: elist
-            integer dimension(last),depend(last), intent(in, out) :: iord
+            real dimension(limit),depend(limit), intent(in, out) :: elist
+            integer dimension(limit),depend(limit), intent(in, out) :: iord
             integer, intent(in, out) :: nrmax
         end subroutine qpsrt
         subroutine qelg(n,epstab,result,abserr,res3la,nres) ! in :f_routines:f_routines.f90

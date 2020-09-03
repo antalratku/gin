@@ -116,17 +116,12 @@ def qpsrt(limit, last, maxerr, ermax, elist, iord, nrmax):
     errmax = 0.0
     errmin = 0.0
 
-    i = 0
     ibeg = 0
     ido = 0
     isucc = 0
-    j = 0
     jbnd = 0
     jupbn = 0
     k = 0
-
-    elist = [0.0 for _ in range(last)]
-    iord = [0 for _ in range(last)]
 
     if not (last > 2):
         iord[0] = 0
@@ -135,7 +130,7 @@ def qpsrt(limit, last, maxerr, ermax, elist, iord, nrmax):
         ermax = elist[maxerr]
         return maxerr, ermax, elist, iord, nrmax    
     errmax = elist[maxerr]
-    if not (nrmax == 0):
+    if (nrmax != 0):
         ido = nrmax
         for _ in range(ido):
             isucc = iord[nrmax - 1]
@@ -160,7 +155,7 @@ def qpsrt(limit, last, maxerr, ermax, elist, iord, nrmax):
         if errmax >= elist[isucc]:
             iord[i-1] = maxerr
             k = jbnd
-            for j in range(i, jbnd, 1):
+            for _ in range(i, jbnd, 1):
                 isucc = iord[k]
                 if errmin < elist[isucc]:
                     iord[k+1] = last

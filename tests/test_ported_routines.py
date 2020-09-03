@@ -72,3 +72,49 @@ def test_qk15i_no_bound(fun_args, boun_inf, a, b):
     assert np.abs(ported_output[2] - fortran_output[2]) < epsilon
     assert np.abs(ported_output[3] - fortran_output[3]) < epsilon
     assert ported_output[4] == fortran_output[4]
+
+
+@pytest.mark.parametrize('params', [
+    ((5, 1, 0, 3.0, np.array([2.0, 1.0, 0.0, 0.0, 0.0]), np.array([0, 0, 0, 0, 0]), 0),
+     (0, 2.0, np.array([2.0, 1.0, 0.0, 0.0, 0.0]), np.array([0, 1, 0, 0, 0]), 0))
+])
+def test_qpsrt(params):
+    input = params[0]
+    expected = params[1]
+
+    limit = input[0]
+    last = input[1]
+    maxerr = input[2]
+    ermax = input[3]
+    elist = input[4]
+    iord = input[5]
+    nrmax = input[6]
+
+    flast = last+1
+    fmaxerr = maxerr+1
+    fiord = iord
+    for i in range(last):
+        fiord[i] += 1
+    fnrmax = nrmax+1
+
+    ported_output = ported_routines.qpsrt(limit, last, maxerr, ermax, elist, iord, nrmax)
+    fortran_output = f.qpsrt(limit=limit, last=flast, maxerr=fmaxerr, ermax=ermax,
+                             elist=elist, iord=fiord, nrmax=fnrmax)
+
+    assert ported_output[0] == expected[0]
+    assert ported_output[1] == expected[1]
+    assert np.array_equal(ported_output[2], expected[2])
+    assert np.array_equal(ported_output[3], expected[3])
+    assert ported_output[4] == expected[4]
+
+    assert fortran_output[0] == limit
+    assert fortran_output[1] == flast
+    assert fortran_output[2] == (ported_output[0]+1)
+    assert fortran_output[3] == ported_output[1]
+    assert np.array_equal(fortran_output[4], ported_output[2])
+    fiord_out = ported_output[3]
+    for i in range(flast):
+        fiord_out[i] += 1
+    assert np.array_equal(fortran_output[5], np.array(fiord_out))
+    assert fortran_output[6] == (ported_output[4]+1)
+
