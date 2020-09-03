@@ -34,13 +34,33 @@ def qk15i(f, boun, inf, a, b, *args):
            0.1690047266392679e+00, 0.1903505780647854e+00, 0.2044329400752989e+00, 0.2094821410847278e+00]
     wg = [0.0000000000000000e+00, 0.1294849661688697e+00, 0.0000000000000000e+00, 0.2797053914892767e+00,
           0.0000000000000000e+00, 0.3818300505051189e+00, 0.0000000000000000e+00, 0.4179591836734694e+00]
-    fv1 = [0.0 for _ in range(8)]
-    fv2 = [0.0 for _ in range(8)]
+    
+    epmach = r1mach(4)
+    uflow = r1mach(1)
     dinf = min(1, inf)
+
+    result = 0.0
+    abserr = 0.0
+    resabs = 0.0
+    resasc = 0.0
+    ierr = 0
+
+    fv1 = np.zeros(shape=7, dtype=np.float)
+    fv2 = np.zeros(shape=7, dtype=np.float)
+
+    fvalt = 0.0
+    
     centr = 0.5e+00*(a+b)
     hlgth = 0.5e+00*(b-a)
     tabsc1 = boun+dinf*(0.1e+01-centr)/centr
-    fval1 = f(tabsc1, *args)
+    fval1, ierr = f(tabsc1, *args)
+    if ierr < 0:
+        return result, abserr, resabs, resasc, ierr
+    if (inf == 2):
+        fval1, ierr = f(-tabsc1, *args)
+        if ierr < 0:
+            return result, abserr, resabs, resasc, ierr
+        fval1 = fval1 + fvalt
     fc = (fval1/centr)/centr
     resg = wg[7]*fc
     resk = wgk[7]*fc
@@ -51,8 +71,21 @@ def qk15i(f, boun, inf, a, b, *args):
         absc2 = centr+absc
         tabsc1 = boun+dinf*(0.1e+01-absc1)/absc1
         tabsc2 = boun+dinf*(0.1e+01-absc2)/absc2
-        fval1 = f(tabsc1, *args)
-        fval2 = f(tabsc2, *args)
+        fval1, ierr = f(tabsc1, *args)
+        if ierr < 0:
+            return result, abserr, resabs, resasc, ierr
+        fval2, ierr = f(tabsc2, *args)
+        if ierr < 0:
+            return result, abserr, resabs, resasc, ierr
+        if (inf == 2):
+            fvalt, ierr = f(-tabsc1, *args)
+            if ierr < 0:
+                return result, abserr, resabs, resasc, ierr
+            fval1 = fval1 + fvalt
+            fvalt, ierr = f(-tabsc2, *args)
+            if ierr < 0:
+                return result, abserr, resabs, resasc, ierr
+            fval2 = fval2 + fvalt
         fval1 = (fval1/absc1)/absc1
         fval2 = (fval2/absc2)/absc2
         fv1[j] = fval1
@@ -71,7 +104,9 @@ def qk15i(f, boun, inf, a, b, *args):
     abserr = abs((resk-resg)*hlgth)
     if (resasc != 0.0e+00) and (abserr != 0.e0):
         abserr = resasc*min(0.1e+01,(0.2e+03*abserr/resasc)**1.5e+00)
-    return result, abserr, resabs, resasc
+    if (resabs > uflow / (0.5e+02*epmach)):
+        abserr = max((epmach*0.5e+02)*resabs, abserr)
+    return result, abserr, resabs, resasc, ierr
 
 
 def qpsrt_cmath(limit, last, maxerr, ermax, elist, iord, nrmax):
