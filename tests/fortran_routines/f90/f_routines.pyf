@@ -28,11 +28,11 @@ python module f_routines ! in
             common /d8mach/ cray1
         end function r1mach
         subroutine qpsrt(limit,last,maxerr,ermax,elist,iord,nrmax) ! in :f_routines:f_routines.f90
-            integer, intent(in, out) :: limit
-            integer, intent(in, out) :: last
+            integer, intent(in) :: limit
+            integer, intent(in) :: last
             integer, intent(in, out) :: maxerr
             real, intent(in, out) :: ermax
-            real dimension(limit),depend(limit), intent(in, out) :: elist
+            real dimension(limit),depend(limit), intent(in) :: elist
             integer dimension(limit),depend(limit), intent(in, out) :: iord
             integer, intent(in, out) :: nrmax
         end subroutine qpsrt

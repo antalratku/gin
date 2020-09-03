@@ -123,57 +123,57 @@ def qpsrt(limit, last, maxerr, ermax, elist, iord, nrmax):
     jupbn = 0
     k = 0
 
-    if not (last > 2):
+    if not (last > 1):
         iord[0] = 0
         iord[1] = 1
         maxerr = iord[nrmax]
         ermax = elist[maxerr]
-        return maxerr, ermax, elist, iord, nrmax    
+        return maxerr, ermax, iord, nrmax    
     errmax = elist[maxerr]
     if (nrmax != 0):
         ido = nrmax
         for _ in range(ido):
-            isucc = iord[nrmax - 1]
+            isucc = iord[nrmax-1]
             if errmax <= elist[isucc]:
                 break
-            iord[nrmax - 1] = isucc
-            nrmax = nrmax-1            
+            iord[nrmax] = isucc
+            nrmax = nrmax-1
     jupbn = last
     if (last > limit//2+2):
         jupbn = limit+3-last
-    errmin = elist[last - 1]
+    errmin = elist[last]
     jbnd = jupbn-1
     ibeg = nrmax+1
     if ibeg > jbnd:
         iord[jbnd] = maxerr
         iord[jupbn] = last
         maxerr = iord[nrmax]
-        errmax = elist[maxerr]
-        return maxerr, errmax, elist, iord, nrmax
-    for i in range(ibeg, jbnd, 1):
+        ermax = elist[maxerr]
+        return maxerr, ermax, iord, nrmax
+    for i in range(ibeg, jbnd+1):
         isucc = iord[i]
         if errmax >= elist[isucc]:
             iord[i-1] = maxerr
             k = jbnd
-            for _ in range(i, jbnd, 1):
+            for _ in range(i, jbnd+1, 1):
                 isucc = iord[k]
                 if errmin < elist[isucc]:
                     iord[k+1] = last
                     maxerr = iord[nrmax]
                     ermax = elist[maxerr]
-                    return maxerr, errmax, elist, iord, nrmax
+                    return maxerr, ermax, iord, nrmax
                 iord[k+1] = isucc
                 k = k+1
             iord[i] = last
             maxerr = iord[nrmax]
             ermax = elist[maxerr]
-            return maxerr, errmax, elist, iord, nrmax
+            return maxerr, ermax, iord, nrmax
         iord[i-1] = isucc
     iord[jbnd] = maxerr
     iord[jupbn] = last
     maxerr = iord[nrmax]
     ermax = elist[maxerr]
-    return maxerr, errmax, elist, iord, nrmax
+    return maxerr, ermax, iord, nrmax
 
 
 def qelg(n, epstab, result, abserr, res3la, nres):
