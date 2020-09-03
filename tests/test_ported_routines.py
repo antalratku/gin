@@ -19,7 +19,6 @@ def test_r1mach(i):
     (lambda x: (np.exp(-0.5*x**2), 0), ())
 ])
 @pytest.mark.parametrize('boun_inf', [
-    (0, 2),
     (0.5, 1),
     (1.5, 1),
     (-0.5, -1),
@@ -35,7 +34,7 @@ def test_qk15i(fun_args, boun_inf, a, b):
 
     ported_output = ported_routines.qk15i(fun, boun, inf, a, b, *args)
     fortran_output = f.qk15i(fun, boun, inf, a, b, args)
-
+    
     epsilon = 1e-5
 
     assert np.abs(ported_output[0] - fortran_output[0]) < epsilon

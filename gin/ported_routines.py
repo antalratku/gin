@@ -23,10 +23,9 @@ def r1mach(i: int):
         raise ValueError(f'r1mach(i): i = {i} is out of bounds.')
 
 
-
 def qk15i(f, boun, inf, a, b, *args):
     '''
-    https://octave.org/doxygen/6.0/d5/d09/qk15i_8f_source.html
+    http://www.netlib.org/quadpack/qk15i.f
     '''
     xgk = [0.9914553711208126e+00, 0.9491079123427585e+00, 0.8648644233597691e+00, 0.7415311855993944e+00,
            0.5860872354676911e+00, 0.4058451513773972e+00, 0.2077849550078985e+00, 0.0000000000000000e+00]
@@ -109,9 +108,9 @@ def qk15i(f, boun, inf, a, b, *args):
     return result, abserr, resabs, resasc, ierr
 
 
-def qpsrt_cmath(limit, last, maxerr, ermax, elist, iord, nrmax):
+def qpsrt(limit, last, maxerr, ermax, elist, iord, nrmax):
     '''
-    https://octave.org/doxygen/6.0/d6/dc6/qpsrt_8f_source.html
+    http://www.netlib.org/quadpack/qpsrt.f
     '''
 
     errmax = 0.0
@@ -182,9 +181,9 @@ def qpsrt_cmath(limit, last, maxerr, ermax, elist, iord, nrmax):
     return maxerr, errmax, elist, iord, nrmax
 
 
-def qelg_cmath(n, epstab, result, abserr, res3la, nres):
+def qelg(n, epstab, result, abserr, res3la, nres):
     '''
-    https://octave.org/doxygen/6.0/d6/da0/qelg_8f_source.html
+    http://www.netlib.org/quadpack/qelg.f
 
     Parameters:
     ----------
