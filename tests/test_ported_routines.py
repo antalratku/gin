@@ -90,7 +90,9 @@ def test_qk15i_no_bound(fun_args, boun_inf, a, b):
     ((5, 3, 1, 1.0, np.array([0.7, 0.8, 0.5, 0.2, 0.0]), np.array([1, 0, 2, 0, 0]), 2),
      (1, 0.8, np.array([1, 1, 0, 3, 0]), 1)),
     ((5, 3, 1, 1.0, np.array([0.7, 0.8, 0.5, 0.2, 0.0]), np.array([1, 0, 2, 0, 0]), 1),
-     (1, 0.8, np.array([1, 1, 2, 3, 0]), 1))
+     (1, 0.8, np.array([1, 1, 2, 3, 0]), 1)),
+    ((11, 7, 1, 0.81, np.array([0.7, 0.41, 0.6, 0.5, 0.45, 0.43, 0.42, 0.4, 0.0, 0.0, 0.0]), np.array([1, 0, 2, 3, 4, 5, 6, 0, 0, 0, 0]), 0),
+     (0, 0.7, np.array([0, 2, 3, 4, 1, 7, 6, 0, 0, 0, 0]), 0))
 ])
 def test_qpsrt(params):
     input = params[0]
@@ -125,8 +127,19 @@ def test_qpsrt(params):
     assert fortran_output[0] == (ported_output[0]+1)
     assert np.abs(fortran_output[1] - ported_output[1]) < epsilon
     fiord_out = ported_output[2]
-    for i in range(flast):
+
+    # This part is necessary to test the jupbn = limit + 3 - last part
+    if (flast > (limit//2)+2):
+        add_until = limit + 3 - (last+1) - 1
+    else:
+        add_until = flast
+
+    for i in range(add_until):
         fiord_out[i] += 1
+    for i in range(add_until, limit):
+        if (fiord_out[i] != 0):
+            fiord_out[i] += 1
+
     assert np.max(np.abs(fortran_output[2] - np.array(fiord_out))) < epsilon
     assert fortran_output[3] == (ported_output[3]+1)
 

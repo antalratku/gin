@@ -139,8 +139,8 @@ def qpsrt(limit, last, maxerr, ermax, elist, iord, nrmax):
             iord[nrmax] = isucc
             nrmax = nrmax-1
     jupbn = last
-    if (last > limit//2+2):
-        jupbn = limit+3-last
+    if (last+1 > limit//2+2):
+        jupbn = limit+3-(last+1)-1
     errmin = elist[last]
     jbnd = jupbn-1
     ibeg = nrmax+1
