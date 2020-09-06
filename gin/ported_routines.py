@@ -9,6 +9,7 @@ def r1mach(i: int):
     numpy finfo. To ensure consistence with the original Fortran
     routine, the constants are returned for 32-bit floats.
     '''
+    
     if (i == 1):
         return np.finfo(np.float32).tiny
     elif (i == 2):
@@ -27,6 +28,7 @@ def qk15i(f, boun, inf, a, b, *args):
     '''
     http://www.netlib.org/quadpack/qk15i.f
     '''
+
     xgk = [0.9914553711208126e+00, 0.9491079123427585e+00, 0.8648644233597691e+00, 0.7415311855993944e+00,
            0.5860872354676911e+00, 0.4058451513773972e+00, 0.2077849550078985e+00, 0.0000000000000000e+00]
     wgk = [0.2293532201052922e-01, 0.6309209262997855e-01, 0.1047900103222502e+00, 0.1406532597155259e+00,
@@ -179,34 +181,8 @@ def qpsrt(limit, last, maxerr, ermax, elist, iord, nrmax):
 def qelg(n, epstab, res3la, nres):
     '''
     http://www.netlib.org/quadpack/qelg.f
-
-    Parameters:
-    ----------
-        n: integer
-            epstab[n] contains the new element in the first column of
-            the epsilon table.
-            Coming from the QAGIE function this is numrl2 -> number of
-            elements currently in rlist2. Therefore, the minimum value is 3.
-
-        epstab: float[]
-            Vector of dimension 52, containing the elements of the two
-            lower diagonals of the triangular epsilon table.
-            Coming from the QAGIE function this is rlist2.
-
-        result: float
-            The resulting approximation to the integral.
-    
-        abserr: float[]
-            The estimate of the absolute error computed from result and the
-            3 previous results.
-
-        res3la: float[]
-            The vector of dimension 3, containing the last 3 results.
-
-        nres: int
-            Number of calls to the routine -> should be zero at first call
-            Note: nres is incremented at the beginning of the routine.
     '''
+
     epmach = r1mach(4)
     oflow = r1mach(2)
 
