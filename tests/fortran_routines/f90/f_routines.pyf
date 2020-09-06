@@ -39,8 +39,8 @@ python module f_routines ! in
         subroutine qelg(n,epstab,result,abserr,res3la,nres) ! in :f_routines:f_routines.f90
             integer, intent(in, out) :: n
             real dimension(52), intent(in, out) :: epstab
-            real, intent(in, out) :: result
-            real, intent(in, out) :: abserr
+            real, intent(out) :: result
+            real, intent(out) :: abserr
             real dimension(3), intent(in, out) :: res3la
             integer, intent(in, out) :: nres
         end subroutine qelg

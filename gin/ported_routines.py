@@ -176,7 +176,7 @@ def qpsrt(limit, last, maxerr, ermax, elist, iord, nrmax):
     return maxerr, ermax, iord, nrmax
 
 
-def qelg(n, epstab, result, abserr, res3la, nres):
+def qelg(n, epstab, res3la, nres):
     '''
     http://www.netlib.org/quadpack/qelg.f
 
@@ -207,45 +207,22 @@ def qelg(n, epstab, result, abserr, res3la, nres):
             Number of calls to the routine -> should be zero at first call
             Note: nres is incremented at the beginning of the routine.
     '''
-    epmach = 1e-20
-    oflow = 1e20
-
-    delta1 = 0.0
-    delta2 = 0.0
-    delta3 = 0.0
-
-    epsinf = 0.0
-    error = 0.0
-
-    err1 = 0.0
-    err2 = 0.0
-    err3 = 0.0
-
-    e0 = 0.0
-    e1 = 0.0
-    e2 = 0.0
-    e3 = 0.0
-    e1abs = 0.0
-
-    res = 0.0
-    ss = 0.0
-    tol1 = 0.0
-    tol2 = 0.0
-    tol3 = 0.0
+    epmach = r1mach(4)
+    oflow = r1mach(2)
 
     nres = nres+1
     abserr = oflow
-    result = epstab[n-1]
-    if n < 3:
+    result = epstab[n]
+    if n < 2:
         abserr = max(abserr, 0.5e+01*epmach*abs(result))
         return n, epstab, result, abserr, res3la, nres
-    limexp = 50
-    epstab[n-1+2] = epstab[n-1]
-    newelm = (n-1)//2
-    epstab[n-1] = oflow
+    limexp = 49
+    epstab[n+2] = epstab[n]
+    newelm = (n-2)//2
+    epstab[n] = oflow
     num = n
-    k1 = n-1
-    for i in range(1, newelm+1):
+    k1 = n
+    for i in range(1, newelm+2):
         k2 = k1-1
         k3 = k1-2
         res = epstab[k1+2]
@@ -270,33 +247,33 @@ def qelg(n, epstab, result, abserr, res3la, nres):
         err1 = abs(delta1)
         tol1 = max(e1abs,abs(e3))*epmach
         if ((err1 <= tol1) or (err2 <= tol2) or (err3 <= tol3)):
-            n = i+i-1
+            n = i+i-2
             break
         ss = 0.1e+01/delta1+0.1e+01/delta2-0.1e+01/delta3
         epsinf = abs(ss*e1)
         if not (epsinf > 0.1e-03):
-            n = i+i-1
+            n = i+i-2
             break
         res = e1+0.1e+01/ss
         epstab[k1] = res
         k1 = k1-2
         error = err2+abs(res-e2)+err3
-        if not (error > abserr):
+        if (error <= abserr):
             abserr = error
             result = res
     if (n == limexp):
-        n = 2*(limexp//2)-1
+        n = 2*(limexp//2)
     ib = 0
-    if ((num//2)*2 == num):
+    if ((num//2)*2 != num):
         ib = 1
-    ie = newelm+1
-    for i in range(ie):
+    ie = newelm+2
+    for _ in range(ie):
         ib2 = ib+2
         epstab[ib] = epstab[ib2]
         ib = ib2
-    if not (num == n):
+    if (num != n):
         indx = num-n
-        for i in range(n):
+        for i in range(n+1):
             epstab[i]= epstab[indx]
             indx = indx+1
     if (nres < 4):
