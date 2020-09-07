@@ -53,7 +53,7 @@ def test_qk15i_with_bound(fun_args, boun_inf, a, b):
     (lambda x, y: (np.abs(x)*np.exp(y*x**2), 0), (-0.5,)),
     (lambda x, y, z: (np.abs(x)*np.exp(y*x**z), 0), (-0.5, 2)),
 ])
-@pytest.mark.parametrize('boun_inf', [(0, 2)])
+@pytest.mark.parametrize('boun_inf', [(0.0, 2)])
 @pytest.mark.parametrize('a', np.linspace(0, 0.4, 3, endpoint=True))
 @pytest.mark.parametrize('b', np.linspace(0.6, 1.0, 3, endpoint=True))
 def test_qk15i_no_bound(fun_args, boun_inf, a, b):
@@ -64,7 +64,7 @@ def test_qk15i_no_bound(fun_args, boun_inf, a, b):
 
     ported_output = ported_routines.qk15i(fun, boun, inf, a, b, *args)
     fortran_output = f.qk15i(fun, boun, inf, a, b, args)
-    
+
     epsilon = 1e-4
 
     assert np.abs(ported_output[0] - fortran_output[0]) < epsilon
@@ -229,4 +229,42 @@ def test_qelg_iter(iter_cnt, fun):
     assert np.abs(abserr - fabserr) < epsilon
     assert np.max(np.abs(res3la - fres3la)) < epsilon
     assert nres == fnres
+
+@pytest.mark.parametrize('fun_args', [
+    (lambda x: (np.exp(-0.5*x**2), 0), ())
+])
+@pytest.mark.parametrize('boun_inf', [
+    (0.1, 1),
+    (1.5, 1),
+    (-0.1, -1),
+    (-1.5, -1),
+    (0.0, 2)
+])
+@pytest.mark.parametrize('epsabs', np.arange(1.49e-08, 1.49e-06, 5))
+@pytest.mark.parametrize('epsrel', np.arange(1.49e-08, 1.49e-06, 5))
+@pytest.mark.parametrize('limit', np.arange(1, 50))
+def test_qagie(fun_args, boun_inf, epsabs, epsrel, limit):
+    fun = fun_args[0]
+    args = fun_args[1]
+    bound = boun_inf[0]
+    inf = boun_inf[1]
+
+    ported_output = ported_routines.qagie(fun, bound, inf, epsabs, epsrel, limit, *args)
+    fortran_output = f.qagie(f=fun, bound=bound, inf=inf, epsabs=epsabs, epsrel=epsrel, limit=limit, f_extra_args=args)
+
+    epsilon = 1e-6
+
+    assert np.abs(fortran_output[0] - ported_output[0]) < epsilon
+    assert np.abs(fortran_output[1] - ported_output[1]) < epsilon
+    assert fortran_output[2] == ported_output[2]
+    assert fortran_output[3] == ported_output[3]
+    assert np.max(np.abs(fortran_output[4] - ported_output[4])) < epsilon
+    assert np.max(np.abs(fortran_output[5] - ported_output[5])) < epsilon
+    assert np.max(np.abs(fortran_output[6] - ported_output[6])) < epsilon
+    assert np.max(np.abs(fortran_output[7] - ported_output[7])) < epsilon
+    assert np.max(np.abs(fortran_output[8] - np.array(ported_output[8]))) == 1
+    if limit == 1:
+        assert fortran_output[9] == ported_output[9]
+    else:   
+        assert fortran_output[9] == ported_output[9] + 1
 

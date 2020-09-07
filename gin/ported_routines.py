@@ -491,7 +491,7 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
                 if (ier > 2):
                     ier = ier - 1
                 return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
-        if ((ksgn != -1) | max(abs(result), abs(area)) > defabs*0.1e-01):
+        if ((ksgn != -1) | (max(abs(result), abs(area)) > defabs*0.1e-01)):
             if ((0.1e-01 > result/area) | (result/area > 0.1e+03) | (errsum > abs(area))):
                 ier = 6
     result = 0.0
