@@ -44,7 +44,6 @@ def qk15i(f, boun, inf, a, b, *args):
     abserr = 0.0
     resabs = 0.0
     resasc = 0.0
-    ierr = 0
 
     fv1 = np.zeros(shape=7, dtype=np.float)
     fv2 = np.zeros(shape=7, dtype=np.float)
@@ -54,13 +53,9 @@ def qk15i(f, boun, inf, a, b, *args):
     centr = 0.5e+00*(a+b)
     hlgth = 0.5e+00*(b-a)
     tabsc1 = boun+dinf*(0.1e+01-centr)/centr
-    fval1, ierr = f(tabsc1, *args)
-    if ierr < 0:
-        return result, abserr, resabs, resasc, ierr
+    fval1 = f(tabsc1, *args)
     if (inf == 2):
-        fval1, ierr = f(-tabsc1, *args)
-        if ierr < 0:
-            return result, abserr, resabs, resasc, ierr
+        fvalt = f(-tabsc1, *args)
         fval1 = fval1 + fvalt
     fc = (fval1/centr)/centr
     resg = wg[7]*fc
@@ -72,20 +67,12 @@ def qk15i(f, boun, inf, a, b, *args):
         absc2 = centr+absc
         tabsc1 = boun+dinf*(0.1e+01-absc1)/absc1
         tabsc2 = boun+dinf*(0.1e+01-absc2)/absc2
-        fval1, ierr = f(tabsc1, *args)
-        if ierr < 0:
-            return result, abserr, resabs, resasc, ierr
-        fval2, ierr = f(tabsc2, *args)
-        if ierr < 0:
-            return result, abserr, resabs, resasc, ierr
+        fval1 = f(tabsc1, *args)
+        fval2 = f(tabsc2, *args)
         if (inf == 2):
-            fvalt, ierr = f(-tabsc1, *args)
-            if ierr < 0:
-                return result, abserr, resabs, resasc, ierr
+            fvalt = f(-tabsc1, *args)
             fval1 = fval1 + fvalt
-            fvalt, ierr = f(-tabsc2, *args)
-            if ierr < 0:
-                return result, abserr, resabs, resasc, ierr
+            fvalt = f(-tabsc2, *args)
             fval2 = fval2 + fvalt
         fval1 = (fval1/absc1)/absc1
         fval2 = (fval2/absc2)/absc2
@@ -107,7 +94,7 @@ def qk15i(f, boun, inf, a, b, *args):
         abserr = resasc*min(0.1e+01,(0.2e+03*abserr/resasc)**1.5e+00)
     if (resabs > uflow / (0.5e+02*epmach)):
         abserr = max((epmach*0.5e+02)*resabs, abserr)
-    return result, abserr, resabs, resasc, ierr
+    return result, abserr, resabs, resasc
 
 
 def qpsrt(limit, last, maxerr, ermax, elist, iord, nrmax):
@@ -299,9 +286,7 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
     if (inf == 2):
         boun = 0.0e+00
 
-    result, abserr, defabs, resabs, ier = qk15i(f, boun, inf, 0.0e+00, 0.1e+01, *args)
-    if (ier < 0):
-        return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
+    result, abserr, defabs, resabs = qk15i(f, boun, inf, 0.0e+00, 0.1e+01, *args)
     
     last = 1
     rlist[0] = result
@@ -347,12 +332,8 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
         a2 = b1
         b2 = blist[maxerr]
         erlast = errmax
-        area1, error1, resabs, defab1, ier = qk15i(f, boun, inf, a1, b1, *args)
-        if (ier < 0):
-            return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
-        area2, error2, resabs, defab2, ier = qk15i(f, boun, inf, a2, b2, *args)
-        if (ier < 0):
-            return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
+        area1, error1, resabs, defab1 = qk15i(f, boun, inf, a1, b1, *args)
+        area2, error2, resabs, defab2 = qk15i(f, boun, inf, a2, b2, *args)
         area12 = area1 + area2
         erro12 = error1 + error2
         errsum = errsum + erro12 - errmax

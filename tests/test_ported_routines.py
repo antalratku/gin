@@ -16,10 +16,10 @@ def test_r1mach(i):
 
 
 @pytest.mark.parametrize('fun_args', [
-    (lambda x: (np.exp(-0.5*x**2), 0), ()),
-    (lambda x: (x*np.exp(-0.5*x**2), 0), ()),
-    (lambda x, y: (x*np.exp(y*x**2), 0), (-0.5,)),
-    (lambda x, y, z: (x*np.exp(y*x**z), 0), (-0.5, 2)),
+    (lambda x: np.exp(-0.5*x**2), ()),
+    (lambda x: x*np.exp(-0.5*x**2), ()),
+    (lambda x, y: x*np.exp(y*x**2), (-0.5,)),
+    (lambda x, y, z: x*np.exp(y*x**z), (-0.5, 2)),
 ])
 @pytest.mark.parametrize('boun_inf', [
     (0.5, 1),
@@ -44,14 +44,13 @@ def test_qk15i_with_bound(fun_args, boun_inf, a, b):
     assert np.abs(ported_output[1] - fortran_output[1]) < epsilon
     assert np.abs(ported_output[2] - fortran_output[2]) < epsilon
     assert np.abs(ported_output[3] - fortran_output[3]) < epsilon
-    assert ported_output[4] == fortran_output[4]
 
 
 @pytest.mark.parametrize('fun_args', [
-    (lambda x: (np.exp(-0.5*x**2), 0), ()),
-    (lambda x: (np.abs(x)*np.exp(-0.5*x**2), 0), ()),
-    (lambda x, y: (np.abs(x)*np.exp(y*x**2), 0), (-0.5,)),
-    (lambda x, y, z: (np.abs(x)*np.exp(y*x**z), 0), (-0.5, 2)),
+    (lambda x: np.exp(-0.5*x**2), ()),
+    (lambda x: np.abs(x)*np.exp(-0.5*x**2), ()),
+    (lambda x, y: np.abs(x)*np.exp(y*x**2), (-0.5,)),
+    (lambda x, y, z: np.abs(x)*np.exp(y*x**z), (-0.5, 2)),
 ])
 @pytest.mark.parametrize('boun_inf', [(0.0, 2)])
 @pytest.mark.parametrize('a', np.linspace(0, 0.4, 3, endpoint=True))
@@ -71,7 +70,6 @@ def test_qk15i_no_bound(fun_args, boun_inf, a, b):
     assert np.abs(ported_output[1] - fortran_output[1]) < epsilon
     assert np.abs(ported_output[2] - fortran_output[2]) < epsilon
     assert np.abs(ported_output[3] - fortran_output[3]) < epsilon
-    assert ported_output[4] == fortran_output[4]
 
 
 @pytest.mark.parametrize('params', [
@@ -231,7 +229,7 @@ def test_qelg_iter(iter_cnt, fun):
     assert nres == fnres
 
 @pytest.mark.parametrize('fun_args', [
-    (lambda x: (np.exp(-0.5*x**2), 0), ())
+    (lambda x: np.exp(-0.5*x**2), ())
 ])
 @pytest.mark.parametrize('boun_inf', [
     (0.1, 1),

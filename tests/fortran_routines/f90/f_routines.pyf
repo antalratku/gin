@@ -3,18 +3,16 @@
 
 python module qk15i__user__routines 
     interface qk15i_user_interface 
-        subroutine f(tabsc1,ierr,fval1) ! in :f_routines:f_routines.f90:qk15i:unknown_interface
+        subroutine f(tabsc1,fval1) ! in :f_routines:f_routines.f90:qk15i:unknown_interface
             real :: tabsc1
-            integer :: ierr
             real, intent(out) :: fval1
         end subroutine f
     end interface qk15i_user_interface
 end python module qk15i__user__routines
 python module qk21__user__routines 
     interface qk21_user_interface 
-        subroutine f(centr,ierr,fc) ! in :f_routines:f_routines.f90:qk21:unknown_interface
+        subroutine f(centr,fc) ! in :f_routines:f_routines.f90:qk21:unknown_interface
             real :: centr
-            integer :: ierr
             real, intent(out) :: fc
         end subroutine f
     end interface qk21_user_interface
@@ -44,7 +42,7 @@ python module f_routines ! in
             real dimension(3), intent(in, out) :: res3la
             integer, intent(in, out) :: nres
         end subroutine qelg
-        subroutine qk15i(f,boun,inf,a,b,result,abserr,resabs,resasc,ierr) ! in :f_routines:f_routines.f90
+        subroutine qk15i(f,boun,inf,a,b,result,abserr,resabs,resasc) ! in :f_routines:f_routines.f90
             use qk15i__user__routines
             external f
             real, intent(in) :: boun
@@ -55,10 +53,9 @@ python module f_routines ! in
             real, intent(out) :: abserr
             real, intent(out) :: resabs
             real, intent(out) :: resasc
-            integer, intent(out) :: ierr
         end subroutine qk15i
         subroutine qagie(f,bound,inf,epsabs,epsrel,limit,result,abserr,neval,ier,alist,blist,rlist,elist,iord,last) ! in :f_routines:f_routines.f90
-		    use qk15i__user__routines
+            use qk15i__user__routines
             external f
             real, intent(in) :: bound
             integer, intent(in) :: inf
@@ -76,7 +73,7 @@ python module f_routines ! in
             integer dimension(limit),depend(limit), intent(out) :: iord
             integer, intent(out) :: last
         end subroutine qagie
-        subroutine qk21(f,a,b,result,abserr,resabs,resasc,ierr) ! in :f_routines:f_routines.f90
+        subroutine qk21(f,a,b,result,abserr,resabs,resasc) ! in :f_routines:f_routines.f90
             use qk21__user__routines
             external f
             real, intent(in) :: a
@@ -85,7 +82,6 @@ python module f_routines ! in
             real, intent(out) :: abserr
             real, intent(out) :: resabs
             real, intent(out) :: resasc
-            integer, intent(out) :: ierr
         end subroutine qk21
         subroutine qagpe(f,a,b,npts2,points,epsabs,epsrel,limit,result,abserr,neval,ier,alist,blist,rlist,elist,pts,iord,level,ndin,last) ! in :f_routines:f_routines.f90
             use qk21__user__routines

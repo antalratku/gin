@@ -759,7 +759,7 @@
 
 
 !*==QK15I.spg  processed by SPAG 6.72Dc at 12:06 on 30 Aug 2020
-      SUBROUTINE QK15I(F,Boun,Inf,A,B,Result,Abserr,Resabs,Resasc,Ierr)
+      SUBROUTINE QK15I(F,Boun,Inf,A,B,Result,Abserr,Resabs,Resasc)
       IMPLICIT NONE
 !*--QK15I4
 !*** Start of declarations inserted by SPAG
@@ -785,7 +785,8 @@
 !
 !           parameters
 !            on entry
-!              f      - subroutine f(x,ierr,result) defining the integrand
+!              f      - real
+!                       function subprogram defining the integrand
 !                       function f(x). the actual name for f needs to be
 !                       declared e x t e r n a l in the calling program.
 !
@@ -905,11 +906,9 @@
       centr = 0.5E+00*(A+B)
       hlgth = 0.5E+00*(B-A)
       tabsc1 = Boun + dinf*(0.1E+01-centr)/centr
-      CALL F(tabsc1,Ierr,fval1)
-      IF ( Ierr<0 ) RETURN
+      CALL F(tabsc1,fval1)
       IF ( Inf==2 ) THEN
-         CALL F(-tabsc1,Ierr,fval1)
-         IF ( Ierr<0 ) RETURN
+         CALL F(-tabsc1,fvalt)
          fval1 = fval1 + fvalt
       ENDIF
       fc = (fval1/centr)/centr
@@ -926,18 +925,14 @@
          absc2 = centr + absc
          tabsc1 = Boun + dinf*(0.1E+01-absc1)/absc1
          tabsc2 = Boun + dinf*(0.1E+01-absc2)/absc2
-         CALL F(tabsc1,Ierr,fval1)
-         IF ( Ierr<0 ) RETURN
-         CALL F(tabsc2,Ierr,fval2)
-         IF ( Ierr<0 ) RETURN
+         CALL F(tabsc1,fval1)
+         CALL F(tabsc2,fval2)
          IF ( Inf==2 ) THEN
-            CALL F(-tabsc1,Ierr,fvalt)
-            IF ( Ierr<0 ) RETURN
+            CALL F(-tabsc1,fvalt)
             fval1 = fval1 + fvalt
          ENDIF
          IF ( Inf==2 ) THEN
-            CALL F(-tabsc2,Ierr,fvalt)
-            IF ( Ierr<0 ) RETURN
+            CALL F(-tabsc2,fvalt)
             fval2 = fval2 + fvalt
          ENDIF
          fval1 = (fval1/absc1)/absc1
@@ -994,7 +989,8 @@
 ! integration over infinite intervals
 ! standard fortran subroutine
 !
-!            f      - subroutine f(x,ierr,result) defining the integrand
+!            f      - real
+!                     function subprogram defining the integrand
 !                     function f(x). the actual name for f needs to be
 !                     declared e x t e r n a l in the driver program.
 !
@@ -1221,9 +1217,7 @@
 !
       boun = Bound
       IF ( Inf==2 ) boun = 0.0E+00
-      CALL QK15I(F,boun,Inf,0.0E+00,0.1E+01,Result,Abserr,defabs,resabs,&
-               & Ier)
-      IF ( Ier<0 ) RETURN
+      CALL QK15I(F,boun,Inf,0.0E+00,0.1E+01,Result,Abserr,defabs,resabs)
 !
 !           test on accuracy
 !
@@ -1275,10 +1269,8 @@
          a2 = b1
          b2 = Blist(maxerr)
          erlast = errmax
-         CALL QK15I(F,boun,Inf,a1,b1,area1,error1,resabs,defab1,Ier)
-         IF ( Ier<0 ) RETURN
-         CALL QK15I(F,boun,Inf,a2,b2,area2,error2,resabs,defab2,Ier)
-         IF ( Ier<0 ) RETURN
+         CALL QK15I(F,boun,Inf,a1,b1,area1,error1,resabs,defab1)
+         CALL QK15I(F,boun,Inf,a2,b2,area2,error2,resabs,defab2)
 !
 !           improve previous approximations to integral
 !           and error and test for accuracy.
@@ -1445,7 +1437,7 @@
 
 
 !*==QK21.spg  processed by SPAG 6.72Dc at 08:15 on  2 Sep 2020
-      SUBROUTINE QK21(F,A,B,Result,Abserr,Resabs,Resasc,Ierr)
+      SUBROUTINE QK21(F,A,B,Result,Abserr,Resabs,Resasc)
       IMPLICIT NONE
 !*--QK214
 !*** Start of declarations inserted by SPAG
@@ -1470,7 +1462,8 @@
 !
 !           parameters
 !            on entry
-!              f      - subroutine f(x,ierr,result) defining the integrand
+!              f      - real
+!                       function subprogram defining the integrand
 !                       function f(x). the actual name for f needs to be
 !                       declared e x t e r n a l in the driver program.
 !
@@ -1579,17 +1572,14 @@
 !           the integral, and estimate the absolute error.
 !
       resg = 0.0E+00
-      CALL F(centr,Ierr,fc)
-      IF ( Ierr<0 ) RETURN
+      CALL F(centr,fc)
       resk = wgk(11)*fc
       Resabs = ABS(resk)
       DO j = 1 , 5
          jtw = 2*j
          absc = hlgth*xgk(jtw)
-         CALL F(centr-absc,Ierr,fval1)
-         IF ( Ierr<0 ) RETURN
-         CALL F(centr+absc,Ierr,fval2)
-         IF ( Ierr<0 ) RETURN
+         CALL F(centr-absc,fval1)
+         CALL F(centr+absc,fval2)
          fv1(jtw) = fval1
          fv2(jtw) = fval2
          fsum = fval1 + fval2
@@ -1600,10 +1590,8 @@
       DO j = 1 , 5
          jtwm1 = 2*j - 1
          absc = hlgth*xgk(jtwm1)
-         CALL F(centr-absc,Ierr,fval1)
-         IF ( Ierr<0 ) RETURN
-         CALL F(centr+absc,Ierr,fval2)
-         IF ( Ierr<0 ) RETURN
+         CALL F(centr-absc,fval1)
+         CALL F(centr+absc,fval2)
          fv1(jtwm1) = fval1
          fv2(jtwm1) = fval2
          fsum = fval1 + fval2
@@ -1659,7 +1647,8 @@
 !
 !        parameters
 !         on entry
-!            f      - subroutine f(x,ierr,result) defining the integrand
+!            f      - real
+!                     function subprogram defining the integrand
 !                     function f(x). the actual name for f needs to be
 !                     declared e x t e r n a l in the driver program.
 !
@@ -1954,8 +1943,7 @@
          resabs = 0.0E+00
          DO i = 1 , nint
             b1 = Pts(i+1)
-            CALL QK21(F,a1,b1,area1,error1,defabs,resa,Ier)
-            IF ( Ier<0 ) RETURN
+            CALL QK21(F,a1,b1,area1,error1,defabs,resa)
             Abserr = Abserr + error1
             Result = Result + area1
             Ndin(i) = 0
@@ -2043,10 +2031,8 @@
             a2 = b1
             b2 = Blist(maxerr)
             erlast = errmax
-            CALL QK21(F,a1,b1,area1,error1,resa,defab1,Ier)
-            IF ( Ier<0 ) RETURN
-            CALL QK21(F,a2,b2,area2,error2,resa,defab2,Ier)
-            IF ( Ier<0 ) RETURN
+            CALL QK21(F,a1,b1,area1,error1,resa,defab1)
+            CALL QK21(F,a2,b2,area2,error2,resa,defab2)
 !
 !           improve previous approximations to integral
 !           and error and test for accuracy.
@@ -2215,3 +2201,4 @@
  200  IF ( Ier>2 ) Ier = Ier - 1
       Result = Result*sign
 99999 END
+
