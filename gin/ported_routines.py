@@ -165,7 +165,7 @@ def qpsrt(limit, last, maxerr, ermax, elist, iord, nrmax):
                     ermax = elist[maxerr]
                     return maxerr, ermax, iord, nrmax
                 iord[k+1] = isucc
-                k = k+1
+                k = k-1
             iord[i] = last
             maxerr = iord[nrmax]
             ermax = elist[maxerr]
