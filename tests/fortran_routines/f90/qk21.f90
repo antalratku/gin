@@ -1,5 +1,5 @@
 !*==QK21.spg  processed by SPAG 6.72Dc at 08:15 on  2 Sep 2020
-      SUBROUTINE QK21(F,A,B,Result,Abserr,Resabs,Resasc,Ierr)
+      SUBROUTINE QK21(F,A,B,Result,Abserr,Resabs,Resasc)
       IMPLICIT NONE
 !*--QK214
 !*** Start of declarations inserted by SPAG
@@ -24,7 +24,8 @@
 !
 !           parameters
 !            on entry
-!              f      - subroutine f(x,ierr,result) defining the integrand
+!              f      - real
+!                       function subprogram defining the integrand
 !                       function f(x). the actual name for f needs to be
 !                       declared e x t e r n a l in the driver program.
 !
@@ -56,9 +57,9 @@
 !***routines called  r1mach
 !***end prologue  qk21
 !
-      REAL A , absc , Abserr , B , centr , dhlgth , epmach , fc , fsum ,&
-         & fval1 , fval2 , fv1 , fv2 , hlgth , Resabs , resg , resk ,   &
-         & reskh , Result , R1MACH , uflow , wg , wgk , xgk
+      REAL A , absc , Abserr , B , centr , dhlgth , epmach , F , fc ,   &
+         & fsum , fval1 , fval2 , fv1 , fv2 , hlgth , Resabs , resg ,   &
+         & resk , reskh , Result , R1MACH , uflow , wg , wgk , xgk
       INTEGER j , jtw , jtwm1
       EXTERNAL F
 !
@@ -133,17 +134,14 @@
 !           the integral, and estimate the absolute error.
 !
       resg = 0.0E+00
-      CALL F(centr,Ierr,fc)
-      IF ( Ierr<0 ) RETURN
+      CALL F(centr,fc)
       resk = wgk(11)*fc
       Resabs = ABS(resk)
       DO j = 1 , 5
          jtw = 2*j
          absc = hlgth*xgk(jtw)
-         CALL F(centr-absc,Ierr,fval1)
-         IF ( Ierr<0 ) RETURN
-         CALL F(centr+absc,Ierr,fval2)
-         IF ( Ierr<0 ) RETURN
+         CALL F(centr-absc,fval1)
+         CALL F(centr+absc,fval2)
          fv1(jtw) = fval1
          fv2(jtw) = fval2
          fsum = fval1 + fval2
@@ -154,10 +152,8 @@
       DO j = 1 , 5
          jtwm1 = 2*j - 1
          absc = hlgth*xgk(jtwm1)
-         CALL F(centr-absc,Ierr,fval1)
-         IF ( Ierr<0 ) RETURN
-         CALL F(centr+absc,Ierr,fval2)
-         IF ( Ierr<0 ) RETURN
+         CALL F(centr-absc,fval1)
+         CALL F(centr+absc,fval2)
          fv1(jtwm1) = fval1
          fv2(jtwm1) = fval2
          fsum = fval1 + fval2

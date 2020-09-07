@@ -1,4 +1,4 @@
-      subroutine qk21(f,a,b,result,abserr,resabs,resasc,ierr)
+      subroutine qk21(f,a,b,result,abserr,resabs,resasc)
 c***begin prologue  qk21
 c***date written   800101   (yymmdd)
 c***revision date  830518   (yymmdd)
@@ -17,7 +17,8 @@ c           real version
 c
 c           parameters
 c            on entry
-c              f      - subroutine f(x,ierr,result) defining the integrand
+c              f      - real
+c                       function subprogram defining the integrand
 c                       function f(x). the actual name for f needs to be
 c                       declared e x t e r n a l in the driver program.
 c
@@ -49,7 +50,7 @@ c***references  (none)
 c***routines called  r1mach
 c***end prologue  qk21
 c
-      real a,absc,abserr,b,centr,dhlgth,epmach,fc,fsum,fval1,fval2,
+      real a,absc,abserr,b,centr,dhlgth,epmach,f,fc,fsum,fval1,fval2,
      *  fv1,fv2,hlgth,resabs,resg,resk,reskh,result,r1mach,uflow,wg,wgk,
      *  xgk
       integer j,jtw,jtwm1
@@ -126,17 +127,14 @@ c           compute the 21-point kronrod approximation to
 c           the integral, and estimate the absolute error.
 c
       resg = 0.0e+00
-      call f(centr, ierr, fc)
-      if (ierr .lt. 0) return
+      fc = f(centr)
       resk = wgk(11)*fc
       resabs = abs(resk)
       do 10 j=1,5
         jtw = 2*j
         absc = hlgth*xgk(jtw)
-        call f(centr-absc,ierr,fval1)
-        if (ierr .lt. 0) return
-        call f(centr+absc,ierr,fval2)
-        if (ierr .lt. 0) return
+        fval1 = f(centr-absc)
+        fval2 = f(centr+absc)
         fv1(jtw) = fval1
         fv2(jtw) = fval2
         fsum = fval1+fval2
@@ -147,10 +145,8 @@ c
       do 15 j = 1,5
         jtwm1 = 2*j-1
         absc = hlgth*xgk(jtwm1)
-        call f(centr-absc,ierr,fval1)
-        if (ierr .lt. 0) return
-        call f(centr+absc,ierr,fval2)
-        if (ierr .lt. 0) return
+        fval1 = f(centr-absc)
+        fval2 = f(centr+absc)
         fv1(jtwm1) = fval1
         fv2(jtwm1) = fval2
         fsum = fval1+fval2

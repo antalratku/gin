@@ -24,7 +24,8 @@ c        real version
 c
 c        parameters
 c         on entry
-c            f      - subroutine f(x,ierr,result) defining the integrand
+c            f      - real
+c                     function subprogram defining the integrand
 c                     function f(x). the actual name for f needs to be
 c                     declared e x t e r n a l in the driver program.
 c
@@ -189,7 +190,7 @@ c***end prologue  qagpe
       real a,abseps,abserr,alist,area,area1,area12,area2,a1,
      *  a2,b,blist,b1,b2,correc,defabs,defab1,defab2,
      *  dres,r1mach,elist,epmach,epsabs,epsrel,erlarg,erlast,errbnd,
-     *  errmax,error1,erro12,error2,errsum,ertest,oflow,points,pts,
+     *  errmax,error1,erro12,error2,errsum,ertest,f,oflow,points,pts,
      *  resa,resabs,reseps,result,res3la,rlist,rlist2,sign,temp,
      *  uflow
       integer i,id,ier,ierro,ind1,ind2,iord,ip1,iroff1,iroff2,
@@ -312,8 +313,7 @@ c
    40 resabs = 0.0e+00
       do 50 i = 1,nint
         b1 = pts(i+1)
-        call qk21(f,a1,b1,area1,error1,defabs,resa,ier)
-        if (ier.lt.0) return
+        call qk21(f,a1,b1,area1,error1,defabs,resa)
         abserr = abserr+error1
         result = result+area1
         ndin(i) = 0
@@ -398,10 +398,8 @@ c
         a2 = b1
         b2 = blist(maxerr)
         erlast = errmax
-        call qk21(f,a1,b1,area1,error1,resa,defab1,ier)
-        if (ier.lt.0) return
-        call qk21(f,a2,b2,area2,error2,resa,defab2,ier)
-        if (ier.lt.0) return
+        call qk21(f,a1,b1,area1,error1,resa,defab1)
+        call qk21(f,a2,b2,area2,error2,resa,defab2)
 c
 c           improve previous approximations to integral
 c           and error and test for accuracy.

@@ -1,4 +1,4 @@
-      subroutine qk15i(f,boun,inf,a,b,result,abserr,resabs,resasc,ierr)
+      subroutine qk15i(f,boun,inf,a,b,result,abserr,resabs,resasc)
 c***begin prologue  qk15i
 c***date written   800101   (yymmdd)
 c***revision date  830518   (yymmdd)
@@ -19,7 +19,8 @@ c           real version
 c
 c           parameters
 c            on entry
-c              f      - subroutine f(x,ierr,result) defining the integrand
+c              f      - real
+c                       fuction subprogram defining the integrand
 c                       function f(x). the actual name for f needs to be
 c                       declared e x t e r n a l in the calling program.
 c
@@ -69,7 +70,7 @@ c***routines called  r1mach
 c***end prologue  qk15i
 c
       real a,absc,absc1,absc2,abserr,b,boun,centr,
-     *  dinf,r1mach,epmach,fc,fsum,fval1,fval2,fvalt,fv1,
+     *  dinf,r1mach,epmach,f,fc,fsum,fval1,fval2,fv1,
      *  fv2,hlgth,resabs,resasc,resg,resk,reskh,result,tabsc1,tabsc2,
      *  uflow,wg,wgk,xgk
       integer inf,j,min0
@@ -141,13 +142,8 @@ c
       centr = 0.5e+00*(a+b)
       hlgth = 0.5e+00*(b-a)
       tabsc1 = boun+dinf*(0.1e+01-centr)/centr
-      call f(tabsc1, ierr, fval1)
-      if (ierr.lt.0) return
-      if(inf.eq.2) then
-         call f(-tabsc1, ierr, fval1)
-         if (ierr.lt.0) return
-         fval1 = fval1 + fvalt
-      endif
+      fval1 = f(tabsc1)
+      if(inf.eq.2) fval1 = fval1+f(-tabsc1)
       fc = (fval1/centr)/centr
 c
 c           compute the 15-point kronrod approximation to
@@ -162,20 +158,10 @@ c
         absc2 = centr+absc
         tabsc1 = boun+dinf*(0.1e+01-absc1)/absc1
         tabsc2 = boun+dinf*(0.1e+01-absc2)/absc2
-        call f(tabsc1, ierr, fval1)
-        if (ierr.lt.0) return
-        call f(tabsc2, ierr, fval2)
-        if (ierr.lt.0) return
-        if(inf.eq.2) then
-           call f(-tabsc1,ierr,fvalt)
-           if (ierr.lt.0) return
-           fval1 = fval1 + fvalt
-        endif
-        if(inf.eq.2) then
-           call f(-tabsc2,ierr,fvalt)
-           if (ierr.lt.0) return
-           fval2 = fval2 + fvalt
-        endif
+        fval1 = f(tabsc1)
+        fval2 = f(tabsc2)
+        if(inf.eq.2) fval1 = fval1+f(-tabsc1)
+        if(inf.eq.2) fval2 = fval2+f(-tabsc2)
         fval1 = (fval1/absc1)/absc1
         fval2 = (fval2/absc2)/absc2
         fv1(j) = fval1

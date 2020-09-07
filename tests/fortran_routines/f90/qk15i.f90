@@ -1,5 +1,5 @@
 !*==QK15I.spg  processed by SPAG 6.72Dc at 12:06 on 30 Aug 2020
-      SUBROUTINE QK15I(F,Boun,Inf,A,B,Result,Abserr,Resabs,Resasc,Ierr)
+      SUBROUTINE QK15I(F,Boun,Inf,A,B,Result,Abserr,Resabs,Resasc)
       IMPLICIT NONE
 !*--QK15I4
 !*** Start of declarations inserted by SPAG
@@ -25,7 +25,8 @@
 !
 !           parameters
 !            on entry
-!              f      - subroutine f(x,ierr,result) defining the integrand
+!              f      - real
+!                       function subprogram defining the integrand
 !                       function f(x). the actual name for f needs to be
 !                       declared e x t e r n a l in the calling program.
 !
@@ -75,8 +76,8 @@
 !***end prologue  qk15i
 !
       REAL A , absc , absc1 , absc2 , Abserr , B , Boun , centr , dinf ,&
-         & R1MACH , epmach , fc , fsum , fval1 , fval2 , fvalt , fv1 ,  &
-         & fv2 , hlgth , Resabs , Resasc , resg , resk , reskh ,        &
+         & R1MACH , epmach , F , fc , fsum , fval1 , fval2 , fvalt ,    &
+         & fv1 , fv2 , hlgth , Resabs , Resasc , resg , resk , reskh ,  &
          & Result , tabsc1 , tabsc2 , uflow , wg , wgk , xgk
       INTEGER Inf , j , MIN0
       EXTERNAL F
@@ -145,11 +146,9 @@
       centr = 0.5E+00*(A+B)
       hlgth = 0.5E+00*(B-A)
       tabsc1 = Boun + dinf*(0.1E+01-centr)/centr
-      CALL F(tabsc1,Ierr,fval1)
-      IF ( Ierr<0 ) RETURN
+      CALL F(tabsc1,fval1)
       IF ( Inf==2 ) THEN
-         CALL F(-tabsc1,Ierr,fval1)
-         IF ( Ierr<0 ) RETURN
+         CALL F(-tabsc1,fvalt)
          fval1 = fval1 + fvalt
       ENDIF
       fc = (fval1/centr)/centr
@@ -166,18 +165,14 @@
          absc2 = centr + absc
          tabsc1 = Boun + dinf*(0.1E+01-absc1)/absc1
          tabsc2 = Boun + dinf*(0.1E+01-absc2)/absc2
-         CALL F(tabsc1,Ierr,fval1)
-         IF ( Ierr<0 ) RETURN
-         CALL F(tabsc2,Ierr,fval2)
-         IF ( Ierr<0 ) RETURN
+         CALL F(tabsc1,fval1)
+         CALL F(tabsc2,fval2)
          IF ( Inf==2 ) THEN
-            CALL F(-tabsc1,Ierr,fvalt)
-            IF ( Ierr<0 ) RETURN
+            CALL F(-tabsc1,fvalt)
             fval1 = fval1 + fvalt
          ENDIF
          IF ( Inf==2 ) THEN
-            CALL F(-tabsc2,Ierr,fvalt)
-            IF ( Ierr<0 ) RETURN
+            CALL F(-tabsc2,fvalt)
             fval2 = fval2 + fvalt
          ENDIF
          fval1 = (fval1/absc1)/absc1

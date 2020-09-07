@@ -20,7 +20,8 @@ c
 c integration over infinite intervals
 c standard fortran subroutine
 c
-c            f      - subroutine f(x,ierr,result) defining the integrand
+c            f      - real
+c                     function subprogram defining the integrand
 c                     function f(x). the actual name for f needs to be
 c                     declared e x t e r n a l in the driver program.
 c
@@ -150,7 +151,7 @@ c
       real abseps,abserr,alist,area,area1,area12,area2,a1,
      *  a2,blist,boun,bound,b1,b2,correc,defabs,defab1,defab2,
      *  dres,r1mach,elist,epmach,epsabs,epsrel,erlarg,erlast,
-     *  errbnd,errmax,error1,error2,erro12,errsum,ertest,oflow,resabs,
+     *  errbnd,errmax,error1,error2,erro12,errsum,ertest,f,oflow,resabs,
      *  reseps,result,res3la,rlist,rlist2,small,uflow
       integer id,ier,ierro,inf,iord,iroff1,iroff2,iroff3,jupbnd,k,ksgn,
      *  ktmin,last,limit,maxerr,neval,nres,nrmax,numrl2
@@ -246,8 +247,7 @@ c
       boun = bound
       if(inf.eq.2) boun = 0.0e+00
       call qk15i(f,boun,inf,0.0e+00,0.1e+01,result,abserr,
-     *  defabs,resabs,ier)
-      if (ier.lt.0) return
+     *  defabs,resabs)
 c
 c           test on accuracy
 c
@@ -300,10 +300,8 @@ c
         a2 = b1
         b2 = blist(maxerr)
         erlast = errmax
-        call qk15i(f,boun,inf,a1,b1,area1,error1,resabs,defab1,ier)
-        if (ier.lt.0) return
-        call qk15i(f,boun,inf,a2,b2,area2,error2,resabs,defab2,ier)
-        if (ier.lt.0) return
+        call qk15i(f,boun,inf,a1,b1,area1,error1,resabs,defab1)
+        call qk15i(f,boun,inf,a2,b2,area2,error2,resabs,defab2)
 c
 c           improve previous approximations to integral
 c           and error and test for accuracy.

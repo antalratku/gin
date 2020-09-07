@@ -30,7 +30,8 @@
 !
 !        parameters
 !         on entry
-!            f      - subroutine f(x,ierr,result) defining the integrand
+!            f      - real
+!                     function subprogram defining the integrand
 !                     function f(x). the actual name for f needs to be
 !                     declared e x t e r n a l in the driver program.
 !
@@ -196,7 +197,7 @@
          & a1 , a2 , B , Blist , b1 , b2 , correc , defabs , defab1 ,   &
          & defab2 , dres , R1MACH , Elist , epmach , Epsabs , Epsrel ,  &
          & erlarg , erlast , errbnd , errmax , error1 , erro12 ,        &
-         & error2 , errsum , ertest , oflow , Points , Pts , resa ,     &
+         & error2 , errsum , ertest , F, oflow , Points , Pts , resa ,  &
          & resabs , reseps , Result , res3la , Rlist , rlist2 , sign ,  &
          & temp , uflow
       INTEGER i , id , Ier , ierro , ind1 , ind2 , Iord , ip1 , iroff1 ,&
@@ -325,8 +326,7 @@
          resabs = 0.0E+00
          DO i = 1 , nint
             b1 = Pts(i+1)
-            CALL QK21(F,a1,b1,area1,error1,defabs,resa,Ier)
-            IF ( Ier<0 ) RETURN
+            CALL QK21(F,a1,b1,area1,error1,defabs,resa)
             Abserr = Abserr + error1
             Result = Result + area1
             Ndin(i) = 0
@@ -414,10 +414,8 @@
             a2 = b1
             b2 = Blist(maxerr)
             erlast = errmax
-            CALL QK21(F,a1,b1,area1,error1,resa,defab1,Ier)
-            IF ( Ier<0 ) RETURN
-            CALL QK21(F,a2,b2,area2,error2,resa,defab2,Ier)
-            IF ( Ier<0 ) RETURN
+            CALL QK21(F,a1,b1,area1,error1,resa,defab1)
+            CALL QK21(F,a2,b2,area2,error2,resa,defab2)
 !
 !           improve previous approximations to integral
 !           and error and test for accuracy.

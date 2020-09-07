@@ -26,7 +26,8 @@
 ! integration over infinite intervals
 ! standard fortran subroutine
 !
-!            f      - subroutine f(x,ierr,result) defining the integrand
+!            f      - real
+!                     function subprogram defining the integrand
 !                     function f(x). the actual name for f needs to be
 !                     declared e x t e r n a l in the driver program.
 !
@@ -157,8 +158,8 @@
          & a1 , a2 , Blist , boun , Bound , b1 , b2 , correc , defabs , &
          & defab1 , defab2 , dres , R1MACH , Elist , epmach , Epsabs ,  &
          & Epsrel , erlarg , erlast , errbnd , errmax , error1 ,        &
-         & error2 , erro12 , errsum , ertest , oflow , resabs , reseps ,&
-         & Result , res3la , Rlist , rlist2 , small , uflow
+         & error2 , erro12 , errsum , ertest , F , oflow , resabs ,     &
+         & reseps , Result , res3la , Rlist , rlist2 , small , uflow
       INTEGER id , Ier , ierro , Inf , Iord , iroff1 , iroff2 , iroff3 ,&
             & jupbnd , k , ksgn , ktmin , Last , Limit , maxerr ,       &
             & Neval , nres , nrmax , numrl2
@@ -253,9 +254,7 @@
 !
       boun = Bound
       IF ( Inf==2 ) boun = 0.0E+00
-      CALL QK15I(F,boun,Inf,0.0E+00,0.1E+01,Result,Abserr,defabs,resabs,&
-               & Ier)
-      IF ( Ier<0 ) RETURN
+      CALL QK15I(F,boun,Inf,0.0E+00,0.1E+01,Result,Abserr,defabs,resabs)
 !
 !           test on accuracy
 !
@@ -307,10 +306,8 @@
          a2 = b1
          b2 = Blist(maxerr)
          erlast = errmax
-         CALL QK15I(F,boun,Inf,a1,b1,area1,error1,resabs,defab1,Ier)
-         IF ( Ier<0 ) RETURN
-         CALL QK15I(F,boun,Inf,a2,b2,area2,error2,resabs,defab2,Ier)
-         IF ( Ier<0 ) RETURN
+         CALL QK15I(F,boun,Inf,a1,b1,area1,error1,resabs,defab1)
+         CALL QK15I(F,boun,Inf,a2,b2,area2,error2,resabs,defab2)
 !
 !           improve previous approximations to integral
 !           and error and test for accuracy.
