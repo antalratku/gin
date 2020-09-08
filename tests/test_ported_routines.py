@@ -7,12 +7,15 @@ import pytest
 import numpy as np
 
 
-@pytest.mark.parametrize('i', [1, 2, 3, 4, 5])
+@pytest.mark.parametrize('i', [1, 2, 3, 4, 5, 6])
 def test_r1mach(i):
-    fortran_val = f.r1mach(i)
-    ported_val = ported_routines.r1mach(i)
-    
-    assert(fortran_val == ported_val)
+    if i <= 5:
+        fortran_val = f.r1mach(i)
+        ported_val = ported_routines.r1mach(i)    
+        assert(fortran_val == ported_val)
+    else:
+        with pytest.raises(Exception):
+            ported_val = ported_routines.r1mach(i)
 
 
 @pytest.mark.parametrize('fun_args', [
