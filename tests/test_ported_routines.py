@@ -17,19 +17,32 @@ def test_r1mach(i):
 
 @pytest.mark.parametrize('fun_args', [
     (lambda x: np.exp(-0.5*x**2), ()),
+    (lambda x: np.abs(x)*np.exp(-0.5*x**2), ()),
     (lambda x: x*np.exp(-0.5*x**2), ()),
+    (lambda x: np.sin(x)*np.exp(-x**20), ()),
     (lambda x, y: x*np.exp(y*x**2), (-0.5,)),
+    (lambda x, y: np.abs(x)*np.exp(y*x**2), (-0.5,)),
     (lambda x, y, z: x*np.exp(y*x**z), (-0.5, 2)),
+    (lambda x, y, z: np.abs(x)*np.exp(y*x**z), (-0.5, 2)),
 ])
 @pytest.mark.parametrize('boun_inf', [
+    (0.0, 2),
+    (0.1, 1),
     (0.5, 1),
     (1.5, 1),
+    (-0.1, 1),
+    (-0.5, 1),
+    (-1.5, 1),
+    (0.1, -1),
+    (0.5, -1),
+    (1.5, -1),
+    (-0.1, -1),
     (-0.5, -1),
     (-1.5, -1)
 ])
 @pytest.mark.parametrize('a', np.linspace(0, 0.4, 3, endpoint=True))
 @pytest.mark.parametrize('b', np.linspace(0.6, 1.0, 3, endpoint=True))
-def test_qk15i_with_bound(fun_args, boun_inf, a, b):
+def test_qk15i(fun_args, boun_inf, a, b):
     fun = fun_args[0]
     args = fun_args[1]
     boun = boun_inf[0]
@@ -38,32 +51,6 @@ def test_qk15i_with_bound(fun_args, boun_inf, a, b):
     ported_output = ported_routines.qk15i(fun, boun, inf, a, b, *args)
     fortran_output = f.qk15i(fun, boun, inf, a, b, args)
     
-    epsilon = 1e-4
-
-    assert np.abs(ported_output[0] - fortran_output[0]) < epsilon
-    assert np.abs(ported_output[1] - fortran_output[1]) < epsilon
-    assert np.abs(ported_output[2] - fortran_output[2]) < epsilon
-    assert np.abs(ported_output[3] - fortran_output[3]) < epsilon
-
-
-@pytest.mark.parametrize('fun_args', [
-    (lambda x: np.exp(-0.5*x**2), ()),
-    (lambda x: np.abs(x)*np.exp(-0.5*x**2), ()),
-    (lambda x, y: np.abs(x)*np.exp(y*x**2), (-0.5,)),
-    (lambda x, y, z: np.abs(x)*np.exp(y*x**z), (-0.5, 2)),
-])
-@pytest.mark.parametrize('boun_inf', [(0.0, 2)])
-@pytest.mark.parametrize('a', np.linspace(0, 0.4, 3, endpoint=True))
-@pytest.mark.parametrize('b', np.linspace(0.6, 1.0, 3, endpoint=True))
-def test_qk15i_no_bound(fun_args, boun_inf, a, b):
-    fun = fun_args[0]
-    args = fun_args[1]
-    boun = boun_inf[0]
-    inf = boun_inf[1]
-
-    ported_output = ported_routines.qk15i(fun, boun, inf, a, b, *args)
-    fortran_output = f.qk15i(fun, boun, inf, a, b, args)
-
     epsilon = 1e-4
 
     assert np.abs(ported_output[0] - fortran_output[0]) < epsilon
@@ -229,14 +216,22 @@ def test_qelg_iter(iter_cnt, fun):
     assert nres == fnres
 
 @pytest.mark.parametrize('fun_args', [
-    (lambda x: np.exp(-0.5*x**2), ())
+    (lambda x: np.exp(-0.5*x**2), ()),
 ])
 @pytest.mark.parametrize('boun_inf', [
+    (0.0, 2),
     (0.1, 1),
+    (0.5, 1),
     (1.5, 1),
+    (-0.1, 1),
+    (-0.5, 1),
+    (-1.5, 1),
+    (0.1, -1),
+    (0.5, -1),
+    (1.5, -1),
     (-0.1, -1),
-    (-1.5, -1),
-    (0.0, 2)
+    (-0.5, -1),
+    (-1.5, -1)
 ])
 @pytest.mark.parametrize('epsabs', np.arange(1.49e-08, 1.49e-06, 5))
 @pytest.mark.parametrize('epsrel', np.arange(1.49e-08, 1.49e-06, 5))
@@ -250,7 +245,7 @@ def test_qagie(fun_args, boun_inf, epsabs, epsrel, limit):
     ported_output = ported_routines.qagie(fun, bound, inf, epsabs, epsrel, limit, *args)
     fortran_output = f.qagie(f=fun, bound=bound, inf=inf, epsabs=epsabs, epsrel=epsrel, limit=limit, f_extra_args=args)
 
-    epsilon = 1e-6
+    epsilon = 1e-4
 
     assert np.abs(fortran_output[0] - ported_output[0]) < epsilon
     assert np.abs(fortran_output[1] - ported_output[1]) < epsilon

@@ -402,8 +402,8 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
             if ((ierro != 3) & (erlarg > ertest)):
                 id = nrmax
                 jupbnd = last
-                if (last > (2+limit//2)):
-                    jupbnd = limit + 3 - last
+                if (last+1 > (2+limit//2)):
+                    jupbnd = limit+3-(last+1)-1
                 for k in range(id, jupbnd+1):
                     maxerr = iord[nrmax]
                     errmax = elist[maxerr]
