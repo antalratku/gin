@@ -431,14 +431,15 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
                 jupbnd = last
                 if (last+1 > (2+limit//2)):
                     jupbnd = limit+3-(last+1)-1
-                for k in range(id, jupbnd+1):
-                    maxerr = iord[nrmax]
-                    errmax = elist[maxerr]
+                if (jupbnd >= id):
+                    for k in range(id, jupbnd+1):
+                        maxerr = iord[nrmax]
+                        errmax = elist[maxerr]
+                        if (abs(blist[maxerr]-alist[maxerr]) > small):
+                            break
+                        nrmax = nrmax + 1
                     if (abs(blist[maxerr]-alist[maxerr]) > small):
-                        break
-                    nrmax = nrmax + 1
-                if (abs(blist[maxerr]-alist[maxerr]) > small):
-                    continue
+                        continue
             numrl2 = numrl2 + 1
             rlist2[numrl2] = area
             numrl2, rlist2, reseps, abseps, res3la, nres = qelg(numrl2, rlist2, res3la, nres)

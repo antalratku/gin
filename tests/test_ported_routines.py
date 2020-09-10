@@ -232,7 +232,7 @@ def test_qelg_iter(iter_cnt, fun):
 @pytest.mark.parametrize('fun_args', [
     (lambda x: np.exp(-0.5*x**2), ()),
     (lambda x: np.sin(x), ()),
-    # (lambda x: x, ())
+    (lambda x: x, ())
 ])
 @pytest.mark.parametrize('boun_inf', [
     (0.0, 2),
