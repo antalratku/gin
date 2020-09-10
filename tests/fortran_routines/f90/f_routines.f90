@@ -546,7 +546,7 @@
 ! 4.        no subroutines or functions needed
 !***end prologue  qpsrt
 !
-      REAL Elist , Ermax , errmax , errmin
+      REAL*8 Elist , Ermax , errmax , errmin
       INTEGER i , ibeg , ido , Iord , isucc , j , jbnd , jupbn , k ,    &
             & Last , Limit , Maxerr , Nrmax
       DIMENSION Elist(Last) , Iord(Last)
@@ -633,7 +633,7 @@
 !*--QELG4
 !***begin prologue  qelg
 !***refer to  qagie,qagoe,qagpe,qagse
-!***routines called  r1mach
+!***routines called  d1mach
 !***revision date  830518   (yymmdd)
 !***keywords  epsilon algorithm, convergence acceleration,
 !             extrapolation
@@ -680,7 +680,7 @@
 !
 !***end prologue  qelg
 !
-      REAL Abserr , delta1 , delta2 , delta3 , R1MACH , epmach ,        &
+      REAL*8 Abserr , delta1 , delta2 , delta3 , D1MACH , epmach ,        &
          & epsinf , Epstab , error , err1 , err2 , err3 , e0 , e1 ,     &
          & e1abs , e2 , e3 , oflow , res , Result , Res3la , ss , tol1 ,&
          & tol2 , tol3
@@ -713,8 +713,8 @@
 !           diagonal of the epsilon table is deleted.
 !
 !***first executable statement  qelg
-      epmach = R1MACH(4)
-      oflow = R1MACH(2)
+      epmach = D1MACH(4)
+      oflow = D1MACH(2)
       Nres = Nres + 1
       Abserr = oflow
       Result = Epstab(N)
@@ -900,11 +900,11 @@
 !                       abs((transformed integrand)-i/(b-a)) over (a,b)
 !
 !***references  (none)
-!***routines called  r1mach
+!***routines called  d1mach
 !***end prologue  qk15i
 !
-      REAL A , absc , absc1 , absc2 , Abserr , B , Boun , centr , dinf ,&
-         & R1MACH , epmach , fc , fsum , fval1 , fval2 , fvalt , fv1 ,  &
+      REAL*8 A , absc , absc1 , absc2 , Abserr , B , Boun , centr , dinf ,&
+         & D1MACH , epmach , fc , fsum , fval1 , fval2 , fvalt , fv1 ,  &
          & fv2 , hlgth , Resabs , Resasc , resg , resk , reskh ,        &
          & Result , tabsc1 , tabsc2 , uflow , wg , wgk , xgk
       INTEGER Inf , j , MIN0
@@ -967,8 +967,8 @@
 !           uflow is the smallest positive magnitude.
 !
 !***first executable statement  qk15i
-      epmach = R1MACH(4)
-      uflow = R1MACH(1)
+      epmach = D1MACH(4)
+      uflow = D1MACH(1)
       dinf = MIN0(1,Inf)
 !
       centr = 0.5E+00*(A+B)
@@ -1035,7 +1035,7 @@
       IMPLICIT NONE
 !*--QAGIE5
 !*** Start of declarations inserted by SPAG
-      REAL F
+      REAL*8 F
 !*** End of declarations inserted by SPAG
 !***begin prologue  qagie
 !***date written   800101   (yymmdd)
@@ -1182,12 +1182,12 @@
 !                     in the subdivision process
 !
 !***references  (none)
-!***routines called  qelg,qk15i,qpsrt,r1mach
+!***routines called  qelg,qk15i,qpsrt,d1mach
 !***end prologue  qagie
 !
-      REAL abseps , Abserr , Alist , area , area1 , area12 , area2 ,    &
+      REAL*8 abseps , Abserr , Alist , area , area1 , area12 , area2 ,    &
          & a1 , a2 , Blist , boun , Bound , b1 , b2 , correc , defabs , &
-         & defab1 , defab2 , dres , R1MACH , Elist , epmach , Epsabs ,  &
+         & defab1 , defab2 , dres , D1MACH , Elist , epmach , Epsabs ,  &
          & Epsrel , erlarg , erlast , errbnd , errmax , error1 ,        &
          & error2 , erro12 , errsum , ertest , oflow , resabs , reseps ,&
          & Result , res3la , Rlist , rlist2 , small , uflow
@@ -1254,7 +1254,7 @@
 !           uflow is the smallest positive magnitude.
 !           oflow is the largest positive magnitude.
 !
-      epmach = R1MACH(4)
+      epmach = D1MACH(4)
 !
 !           test on validity of parameters
 !           -----------------------------
@@ -1303,8 +1303,8 @@
 !           initialization
 !           --------------
 !
-      uflow = R1MACH(1)
-      oflow = R1MACH(2)
+      uflow = D1MACH(1)
+      oflow = D1MACH(2)
       rlist2(1) = Result
       errmax = Abserr
       maxerr = 1
@@ -1510,7 +1510,7 @@
 !*--QK214
 !*** Start of declarations inserted by SPAG
       INTEGER Ierr
-      REAL Resasc
+      REAL*8 Resasc
 !*** End of declarations inserted by SPAG
 !***begin prologue  qk21
 !***date written   800101   (yymmdd)
@@ -1560,12 +1560,12 @@
 !                       over (a,b)
 !
 !***references  (none)
-!***routines called  r1mach
+!***routines called  d1mach
 !***end prologue  qk21
 !
-      REAL A , absc , Abserr , B , centr , dhlgth , epmach , fc , fsum ,&
+      REAL*8 A , absc , Abserr , B , centr , dhlgth , epmach , fc , fsum ,&
          & fval1 , fval2 , fv1 , fv2 , hlgth , Resabs , resg , resk ,   &
-         & reskh , Result , R1MACH , uflow , wg , wgk , xgk
+         & reskh , Result , D1MACH , uflow , wg , wgk , xgk
       INTEGER j , jtw , jtwm1
       EXTERNAL F
 !
@@ -1629,8 +1629,8 @@
 !           uflow is the smallest positive magnitude.
 !
 !***first executable statement  qk21
-      epmach = R1MACH(4)
-      uflow = R1MACH(1)
+      epmach = D1MACH(4)
+      uflow = D1MACH(1)
 !
       centr = 0.5E+00*(A+B)
       hlgth = 0.5E+00*(B-A)
@@ -1690,7 +1690,7 @@
       IMPLICIT NONE
 !*--QAGPE6
 !*** Start of declarations inserted by SPAG
-      REAL F
+      REAL*8 F
 !*** End of declarations inserted by SPAG
 !***begin prologue  qagpe
 !***date written   800101   (yymmdd)
@@ -1876,11 +1876,11 @@
 !                     subdivisions process
 !
 !***references  (none)
-!***routines called  qelg,qk21,qpsrt,r1mach
+!***routines called  qelg,qk21,qpsrt,d1mach
 !***end prologue  qagpe
-      REAL A , abseps , Abserr , Alist , area , area1 , area12 , area2 ,&
+      REAL*8 A , abseps , Abserr , Alist , area , area1 , area12 , area2 ,&
          & a1 , a2 , B , Blist , b1 , b2 , correc , defabs , defab1 ,   &
-         & defab2 , dres , R1MACH , Elist , epmach , Epsabs , Epsrel ,  &
+         & defab2 , dres , D1MACH , Elist , epmach , Epsabs , Epsrel ,  &
          & erlarg , erlast , errbnd , errmax , error1 , erro12 ,        &
          & error2 , errsum , ertest , oflow , Points , Pts , resa ,     &
          & resabs , reseps , Result , res3la , Rlist , rlist2 , sign ,  &
@@ -1952,7 +1952,7 @@
 !           oflow is the largest positive magnitude.
 !
 !***first executable statement  qagpe
-      epmach = R1MACH(4)
+      epmach = D1MACH(4)
 !
 !            test on validity of parameters
 !            -----------------------------
@@ -2079,8 +2079,8 @@
          iroff2 = 0
          iroff3 = 0
          ierro = 0
-         uflow = R1MACH(1)
-         oflow = R1MACH(2)
+         uflow = D1MACH(1)
+         oflow = D1MACH(2)
          Abserr = oflow
          ksgn = -1
          IF ( dres>=(0.1E+01-0.5E+02*epmach)*resabs ) ksgn = 1

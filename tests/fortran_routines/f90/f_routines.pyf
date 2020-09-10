@@ -4,16 +4,16 @@
 python module qk15i__user__routines 
     interface qk15i_user_interface 
         subroutine f(tabsc1,fval1) ! in :f_routines:f_routines.f90:qk15i:unknown_interface
-            real :: tabsc1
-            real, intent(out) :: fval1
+            real(kind=8) :: tabsc1
+            real(kind=8), intent(out) :: fval1
         end subroutine f
     end interface qk15i_user_interface
 end python module qk15i__user__routines
 python module qk21__user__routines 
     interface qk21_user_interface 
         subroutine f(centr,fc) ! in :f_routines:f_routines.f90:qk21:unknown_interface
-            real :: centr
-            real, intent(out) :: fc
+            real(kind=8) :: centr
+            real(kind=8), intent(out) :: fc
         end subroutine f
     end interface qk21_user_interface
 end python module qk21__user__routines
@@ -33,79 +33,79 @@ python module f_routines ! in
             integer, intent(in) :: limit
             integer, intent(in) :: last
             integer, intent(in, out) :: maxerr
-            real, intent(in, out) :: ermax
-            real dimension(limit),depend(limit), intent(in) :: elist
+            real(kind=8), intent(in, out) :: ermax
+            real(kind=8) dimension(limit),depend(limit), intent(in) :: elist
             integer dimension(limit),depend(limit), intent(in, out) :: iord
             integer, intent(in, out) :: nrmax
         end subroutine qpsrt
         subroutine qelg(n,epstab,result,abserr,res3la,nres) ! in :f_routines:f_routines.f90
             integer, intent(in, out) :: n
-            real dimension(52), intent(in, out) :: epstab
-            real, intent(out) :: result
-            real, intent(out) :: abserr
-            real dimension(3), intent(in, out) :: res3la
+            real(kind=8) dimension(52), intent(in, out) :: epstab
+            real(kind=8), intent(out) :: result
+            real(kind=8), intent(out) :: abserr
+            real(kind=8) dimension(3), intent(in, out) :: res3la
             integer, intent(in, out) :: nres
         end subroutine qelg
         subroutine qk15i(f,boun,inf,a,b,result,abserr,resabs,resasc) ! in :f_routines:f_routines.f90
             use qk15i__user__routines
             external f
-            real, intent(in) :: boun
+            real(kind=8), intent(in) :: boun
             integer, intent(in) :: inf
-            real, intent(in) :: a
-            real, intent(in) :: b
-            real, intent(out) :: result
-            real, intent(out) :: abserr
-            real, intent(out) :: resabs
-            real, intent(out) :: resasc
+            real(kind=8), intent(in) :: a
+            real(kind=8), intent(in) :: b
+            real(kind=8), intent(out) :: result
+            real(kind=8), intent(out) :: abserr
+            real(kind=8), intent(out) :: resabs
+            real(kind=8), intent(out) :: resasc
         end subroutine qk15i
         subroutine qagie(f,bound,inf,epsabs,epsrel,limit,result,abserr,neval,ier,alist,blist,rlist,elist,iord,last) ! in :f_routines:f_routines.f90
             use qk15i__user__routines
             external f
-            real, intent(in) :: bound
+            real(kind=8), intent(in) :: bound
             integer, intent(in) :: inf
-            real, intent(in) :: epsabs
-            real, intent(in) :: epsrel
+            real(kind=8), intent(in) :: epsabs
+            real(kind=8), intent(in) :: epsrel
             integer, intent(in) :: limit
-            real, intent(out) :: result
-            real, intent(out) :: abserr
+            real(kind=8), intent(out) :: result
+            real(kind=8), intent(out) :: abserr
             integer, intent(out) :: neval
             integer, intent(out) :: ier
-            real dimension(limit),depend(limit), intent(out) :: alist
-            real dimension(limit),depend(limit), intent(out) :: blist
-            real dimension(limit),depend(limit), intent(out) :: rlist
-            real dimension(limit),depend(limit), intent(out) :: elist
+            real(kind=8) dimension(limit),depend(limit), intent(out) :: alist
+            real(kind=8) dimension(limit),depend(limit), intent(out) :: blist
+            real(kind=8) dimension(limit),depend(limit), intent(out) :: rlist
+            real(kind=8) dimension(limit),depend(limit), intent(out) :: elist
             integer dimension(limit),depend(limit), intent(out) :: iord
             integer, intent(out) :: last
         end subroutine qagie
         subroutine qk21(f,a,b,result,abserr,resabs,resasc) ! in :f_routines:f_routines.f90
             use qk21__user__routines
             external f
-            real, intent(in) :: a
-            real, intent(in) :: b
-            real, intent(out) :: result
-            real, intent(out) :: abserr
-            real, intent(out) :: resabs
-            real, intent(out) :: resasc
+            real(kind=8), intent(in) :: a
+            real(kind=8), intent(in) :: b
+            real(kind=8), intent(out) :: result
+            real(kind=8), intent(out) :: abserr
+            real(kind=8), intent(out) :: resabs
+            real(kind=8), intent(out) :: resasc
         end subroutine qk21
         subroutine qagpe(f,a,b,npts2,points,epsabs,epsrel,limit,result,abserr,neval,ier,alist,blist,rlist,elist,pts,iord,level,ndin,last) ! in :f_routines:f_routines.f90
             use qk21__user__routines
             external f
-            real, intent(in) :: a
-            real, intent(in) :: b
+            real(kind=8), intent(in) :: a
+            real(kind=8), intent(in) :: b
             integer, intent(in) :: npts2
-            real dimension(npts2), intent(in) :: points
-            real, intent(in) :: epsabs
-            real, intent(in) :: epsrel
+            real(kind=8) dimension(npts2), intent(in) :: points
+            real(kind=8), intent(in) :: epsabs
+            real(kind=8), intent(in) :: epsrel
             integer, intent(in) :: limit
-            real, intent(out) :: result
-            real, intent(out) :: abserr
+            real(kind=8), intent(out) :: result
+            real(kind=8), intent(out) :: abserr
             integer, intent(out) :: neval
             integer, intent(out) :: ier
-            real dimension(limit),depend(limit), intent(out) :: alist
-            real dimension(limit),depend(limit), intent(out) :: blist
-            real dimension(limit),depend(limit), intent(out) :: rlist
-            real dimension(limit),depend(limit), intent(out) :: elist
-            real dimension(npts2),depend(npts2), intent(out) :: pts
+            real(kind=8) dimension(limit),depend(limit), intent(out) :: alist
+            real(kind=8) dimension(limit),depend(limit), intent(out) :: blist
+            real(kind=8) dimension(limit),depend(limit), intent(out) :: rlist
+            real(kind=8) dimension(limit),depend(limit), intent(out) :: elist
+            real(kind=8) dimension(npts2),depend(npts2), intent(out) :: pts
             integer dimension(limit),depend(limit), intent(out) :: iord
             integer dimension(limit),depend(limit), intent(out) :: level
             integer dimension(npts2),depend(npts2), intent(out) :: ndin

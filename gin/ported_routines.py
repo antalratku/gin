@@ -52,15 +52,18 @@ def qk15i(f, boun, inf, a, b, *args):
     http://www.netlib.org/quadpack/qk15i.f
     '''
 
-    xgk = [0.9914553711208126e+00, 0.9491079123427585e+00, 0.8648644233597691e+00, 0.7415311855993944e+00,
-           0.5860872354676911e+00, 0.4058451513773972e+00, 0.2077849550078985e+00, 0.0000000000000000e+00]
-    wgk = [0.2293532201052922e-01, 0.6309209262997855e-01, 0.1047900103222502e+00, 0.1406532597155259e+00,
-           0.1690047266392679e+00, 0.1903505780647854e+00, 0.2044329400752989e+00, 0.2094821410847278e+00]
-    wg = [0.0000000000000000e+00, 0.1294849661688697e+00, 0.0000000000000000e+00, 0.2797053914892767e+00,
-          0.0000000000000000e+00, 0.3818300505051189e+00, 0.0000000000000000e+00, 0.4179591836734694e+00]
+    xgk = np.array([0.9914553711208126e+00, 0.9491079123427585e+00, 0.8648644233597691e+00, 0.7415311855993944e+00,
+                    0.5860872354676911e+00, 0.4058451513773972e+00, 0.2077849550078985e+00, 0.0000000000000000e+00],
+                    dtype=np.float)
+    wgk = np.array([0.2293532201052922e-01, 0.6309209262997855e-01, 0.1047900103222502e+00, 0.1406532597155259e+00,
+                    0.1690047266392679e+00, 0.1903505780647854e+00, 0.2044329400752989e+00, 0.2094821410847278e+00],
+                    dtype=np.float)
+    wg = np.array([0.0000000000000000e+00, 0.1294849661688697e+00, 0.0000000000000000e+00, 0.2797053914892767e+00,
+                   0.0000000000000000e+00, 0.3818300505051189e+00, 0.0000000000000000e+00, 0.4179591836734694e+00],
+                   dtype=np.float)
     
-    epmach = r1mach(4)
-    uflow = r1mach(1)
+    epmach = d1mach(4)
+    uflow = d1mach(1)
     dinf = min(1, inf)
 
     result = 0.0
@@ -193,8 +196,8 @@ def qelg(n, epstab, res3la, nres):
     http://www.netlib.org/quadpack/qelg.f
     '''
 
-    epmach = r1mach(4)
-    oflow = r1mach(2)
+    epmach = d1mach(4)
+    oflow = d1mach(2)
 
     nres = nres+1
     abserr = oflow
@@ -288,7 +291,7 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
     rlist = np.zeros(shape=limit, dtype=np.float)
     rlist2 = np.zeros(shape=52, dtype=np.float)
 
-    epmach = r1mach(4)
+    epmach = d1mach(4)
 
     ier = 0
     neval = 0
@@ -328,8 +331,8 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
         if (ier > 2):
             ier = ier -1
         return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
-    uflow = r1mach(1)
-    oflow = r1mach(2)
+    uflow = d1mach(1)
+    oflow = d1mach(2)
     rlist2[0] = result
     errmax = abserr
     maxerr = 0
