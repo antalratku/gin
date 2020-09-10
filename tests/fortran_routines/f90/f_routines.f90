@@ -735,16 +735,16 @@
             e1abs = ABS(e1)
             delta2 = e2 - e1
             err2 = ABS(delta2)
-            tol2 = AMAX1(ABS(e2),e1abs)*epmach
+            tol2 = MAX(ABS(e2),e1abs)*epmach
             delta3 = e1 - e0
             err3 = ABS(delta3)
-            tol3 = AMAX1(e1abs,ABS(e0))*epmach
+            tol3 = MAX(e1abs,ABS(e0))*epmach
             IF ( err2>tol2 .OR. err3>tol3 ) THEN
                e3 = Epstab(k1)
                Epstab(k1) = e1
                delta1 = e1 - e3
                err1 = ABS(delta1)
-               tol1 = AMAX1(e1abs,ABS(e3))*epmach
+               tol1 = MAX(e1abs,ABS(e3))*epmach
 !
 !           if two elements are very close to each other, omit
 !           a part of the table by adjusting the value of n
@@ -822,7 +822,7 @@
             Abserr = oflow
          ENDIF
       ENDIF
- 200  Abserr = AMAX1(Abserr,0.5E+01*epmach*ABS(Result))
+ 200  Abserr = MAX(Abserr,0.5E+01*epmach*ABS(Result))
       END
 
 
@@ -1025,7 +1025,7 @@
          & Abserr = Resasc*AMIN1(0.1E+01,(0.2E+03*Abserr/Resasc)        &
          & **1.5E+00)
       IF ( Resabs>uflow/(0.5E+02*epmach) )                              &
-         & Abserr = AMAX1((epmach*0.5E+02)*Resabs,Abserr)
+         & Abserr = MAX((epmach*0.5E+02)*Resabs,Abserr)
       END
 
 
@@ -1270,7 +1270,7 @@
       Rlist(1) = 0.0E+00
       Elist(1) = 0.0E+00
       Iord(1) = 0
-      IF ( Epsabs<=0.0E+00 .AND. Epsrel<AMAX1(0.5E+02*epmach,0.5E-14) ) &
+      IF ( Epsabs<=0.0E+00 .AND. Epsrel<MAX(0.5E+02*epmach,0.5E-14) ) &
          & Ier = 6
       IF ( Ier==6 ) GOTO 99999
 !
@@ -1294,7 +1294,7 @@
       Elist(1) = Abserr
       Iord(1) = 1
       dres = ABS(Result)
-      errbnd = AMAX1(Epsabs,Epsrel*dres)
+      errbnd = MAX(Epsabs,Epsrel*dres)
       IF ( Abserr<=1.0E+02*epmach*defabs .AND. Abserr>errbnd ) Ier = 2
       IF ( Limit==1 ) Ier = 1
       IF ( Ier/=0 .OR. (Abserr<=errbnd .AND. Abserr/=resabs) .OR.       &
@@ -1357,7 +1357,7 @@
          ENDIF
          Rlist(maxerr) = area1
          Rlist(Last) = area2
-         errbnd = AMAX1(Epsabs,Epsrel*ABS(area))
+         errbnd = MAX(Epsabs,Epsrel*ABS(area))
 !
 !           test for roundoff error and eventually
 !           set error flag.
@@ -1373,7 +1373,7 @@
 !           set error flag in the case of bad integrand behaviour
 !           at some points of the integration range.
 !
-         IF ( AMAX1(ABS(a1),ABS(b2))<=(0.1E+01+0.1E+03*epmach)          &
+         IF ( MAX(ABS(a1),ABS(b2))<=(0.1E+01+0.1E+03*epmach)          &
             & *(ABS(a2)+0.1E+04*uflow) ) Ier = 4
 !
 !           append the newly-created intervals to the list.
@@ -1449,7 +1449,7 @@
                Abserr = abseps
                Result = reseps
                correc = erlarg
-               ertest = AMAX1(Epsabs,Epsrel*ABS(reseps))
+               ertest = MAX(Epsabs,Epsrel*ABS(reseps))
                IF ( Abserr<=ertest ) GOTO 200
             ENDIF
 !
@@ -1483,7 +1483,7 @@
 !
 !           test on divergence
 !
-         IF ( ksgn/=(-1) .OR. AMAX1(ABS(Result),ABS(area))              &
+         IF ( ksgn/=(-1) .OR. MAX(ABS(Result),ABS(area))              &
             & >defabs*0.1E-01 ) THEN
             IF ( 0.1E-01>(Result/area) .OR. (Result/area)>0.1E+03 .OR.  &
                & errsum>ABS(area) ) Ier = 6
@@ -1679,7 +1679,7 @@
          & Abserr = Resasc*AMIN1(0.1E+01,(0.2E+03*Abserr/Resasc)        &
          & **1.5E+00)
       IF ( Resabs>uflow/(0.5E+02*epmach) )                              &
-         & Abserr = AMAX1((epmach*0.5E+02)*Resabs,Abserr)
+         & Abserr = MAX((epmach*0.5E+02)*Resabs,Abserr)
       END
 
 
@@ -1970,7 +1970,7 @@
       Level(1) = 0
       npts = Npts2 - 2
       IF ( Npts2<2 .OR. Limit<=npts .OR.                                &
-         & (Epsabs<=0.0E+00 .AND. Epsrel<AMAX1(0.5E+02*epmach,0.5E-14)) &
+         & (Epsabs<=0.0E+00 .AND. Epsrel<MAX(0.5E+02*epmach,0.5E-14)) &
          & ) Ier = 6
       IF ( Ier/=6 ) THEN
 !
@@ -1985,7 +1985,7 @@
                Pts(i+1) = Points(i)
             ENDDO
          ENDIF
-         Pts(npts+2) = AMAX1(A,B)
+         Pts(npts+2) = MAX(A,B)
          nint = npts + 1
          a1 = Pts(1)
          IF ( npts/=0 ) THEN
@@ -2000,7 +2000,7 @@
                   ENDIF
                ENDDO
             ENDDO
-            IF ( Pts(1)/=AMIN1(A,B) .OR. Pts(nintp1)/=AMAX1(A,B) )      &
+            IF ( Pts(1)/=AMIN1(A,B) .OR. Pts(nintp1)/=MAX(A,B) )      &
                & Ier = 6
             IF ( Ier==6 ) GOTO 99999
          ENDIF
@@ -2036,7 +2036,7 @@
          Last = nint
          Neval = 21*nint
          dres = ABS(Result)
-         errbnd = AMAX1(Epsabs,Epsrel*dres)
+         errbnd = MAX(Epsabs,Epsrel*dres)
          IF ( Abserr<=0.1E+03*epmach*resabs .AND. Abserr>errbnd )       &
             & Ier = 2
          IF ( nint/=1 ) THEN
@@ -2122,7 +2122,7 @@
             Level(Last) = levcur
             Rlist(maxerr) = area1
             Rlist(Last) = area2
-            errbnd = AMAX1(Epsabs,Epsrel*ABS(area))
+            errbnd = MAX(Epsabs,Epsrel*ABS(area))
 !
 !           test for roundoff error and eventually
 !           set error flag.
@@ -2138,7 +2138,7 @@
 !           set error flag in the case of bad integrand behaviour
 !           at a point of the integration range
 !
-            IF ( AMAX1(ABS(a1),ABS(b2))<=(0.1E+01+0.1E+03*epmach)       &
+            IF ( MAX(ABS(a1),ABS(b2))<=(0.1E+01+0.1E+03*epmach)       &
                & *(ABS(a2)+0.1E+04*uflow) ) Ier = 4
 !
 !           append the newly-created intervals to the list.
@@ -2213,7 +2213,7 @@
                      Abserr = abseps
                      Result = reseps
                      correc = erlarg
-                     ertest = AMAX1(Epsabs,Epsrel*ABS(reseps))
+                     ertest = MAX(Epsabs,Epsrel*ABS(reseps))
 ! ***jump out of do-loop
                      IF ( Abserr<ertest ) GOTO 100
                   ENDIF
@@ -2250,7 +2250,7 @@
 !
 !           test on divergence.
 !
-            IF ( ksgn/=(-1) .OR. AMAX1(ABS(Result),ABS(area))           &
+            IF ( ksgn/=(-1) .OR. MAX(ABS(Result),ABS(area))           &
                & >resabs*0.1E-01 ) THEN
                IF ( 0.1E-01>(Result/area) .OR. (Result/area)            &
                   & >0.1E+03 .OR. errsum>ABS(area) ) Ier = 6
