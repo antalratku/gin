@@ -19,6 +19,10 @@ python module qk21__user__routines
 end python module qk21__user__routines
 python module f_routines ! in 
     interface  ! in :f_routines
+        function d1mach(i) ! in :f_routines:f_routines.f90
+            integer :: i
+            real(kind=8) :: d1mach
+        end function d1mach
         function r1mach(i) ! in :f_routines:f_routines.f90
             integer :: i
             integer :: cray1

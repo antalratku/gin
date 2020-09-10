@@ -24,6 +24,29 @@ def r1mach(i: int):
         raise ValueError(f'r1mach(i): i = {i} is out of bounds.')
 
 
+def d1mach(i: int):
+    '''
+    http://computer-programming-forum.com/49-fortran/9d39e9771b0d8e20.htm
+
+    The machine dependent constants are returned from
+    numpy finfo. To ensure consistence with the original Fortran
+    routine, the constants are returned for 64-bit floats.
+    '''
+
+    if (i == 1):
+        return np.finfo(np.float).tiny
+    elif (i == 2):
+        return np.finfo(np.float).max
+    elif (i == 3):
+        return np.finfo(np.float).epsneg
+    elif (i == 4):
+        return np.finfo(np.float).eps
+    elif (i == 5):
+        return np.float(np.log10(2))
+    else:
+        raise ValueError(f'd1mach(i): i = {i} is out of bounds.')
+
+
 def qk15i(f, boun, inf, a, b, *args):
     '''
     http://www.netlib.org/quadpack/qk15i.f
@@ -278,7 +301,7 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
     elist[0] = 0.0e+00
     iord[0] = 0
 
-    if ((epsabs <= 0.0e+00) & (epsrel < max(0.5e+02*epmach, 0.5e-14))):
+    if ((epsabs <= 0.0e+00) and (epsrel < max(0.5e+02*epmach, 0.5e-14))):
         ier = 6
         return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
 
@@ -294,11 +317,11 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
     iord[0] = 0
     dres = abs(result)
     errbnd = max(epsabs, epsrel*dres)
-    if ((abserr <= 1.0E+02*epmach*defabs) & (abserr>errbnd)):
+    if ((abserr <= 1.0E+02*epmach*defabs) and (abserr>errbnd)):
         ier = 2
     if (limit == 1):
         ier = 1    
-    if ((ier != 0) | ((abserr <= errbnd) & (abserr != resabs)) | (abserr == 0.0E+00 )):
+    if ((ier != 0) or ((abserr <= errbnd) and (abserr != resabs)) or (abserr == 0.0E+00 )):
         neval = 30*last-15
         if (inf == 2):
             neval = 2*neval
@@ -338,18 +361,18 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
         erro12 = error1 + error2
         errsum = errsum + erro12 - errmax
         area = area + area12 - rlist[maxerr]
-        if ((defab1 != error1) & (defab2 != error2)):
-            if ((abs(rlist[maxerr]-area12) <= 0.1E-04*abs(area12)) & (erro12 >= 0.99E+00*errmax)):
+        if ((defab1 != error1) and (defab2 != error2)):
+            if ((abs(rlist[maxerr]-area12) <= 0.1E-04*abs(area12)) and (erro12 >= 0.99E+00*errmax)):
                if extrap:
                    iroff2 = iroff2 + 1
                else:
                    iroff1 = iroff1 + 1
-            if ((last >= 10) & (erro12 > errmax)):
+            if ((last >= 10) and (erro12 > errmax)):
                 iroff3 = iroff3 + 1
         rlist[maxerr] = area1
         rlist[last] = area2
         errbnd = max(epsabs,epsrel*abs(area))
-        if ((iroff1+iroff2 >= 10) | (iroff3>=20)):
+        if ((iroff1+iroff2 >= 10) or (iroff3>=20)):
             ier = 2
         if (iroff2 >= 5):
             ierro = 3
@@ -399,7 +422,7 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
                     continue
                 extrap = True
                 nrmax = 1
-            if ((ierro != 3) & (erlarg > ertest)):
+            if ((ierro != 3) and (erlarg > ertest)):
                 id = nrmax
                 jupbnd = last
                 if (last+1 > (2+limit//2)):
@@ -416,7 +439,7 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
             rlist2[numrl2] = area
             numrl2, rlist2, reseps, abseps, res3la, nres = qelg(numrl2, rlist2, res3la, nres)
             ktmin = ktmin + 1
-            if ((ktmin > 5) & (abserr < 0.1E-02*errsum)):
+            if ((ktmin > 5) and (abserr < 0.1E-02*errsum)):
                 ier = 5
             if (abseps < abserr):
                 ktmin = 0
@@ -442,7 +465,7 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
                 abserr = abserr + correc
             if (ier == 0):
                 ier = 3
-            if ((result == 0.0e+00) | (area == 0.0e+00)):
+            if ((result == 0.0e+00) or (area == 0.0e+00)):
                 if (abserr > errsum):
                     result = 0.0
                     for k in range(last+1):
@@ -472,8 +495,8 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
                 if (ier > 2):
                     ier = ier - 1
                 return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
-        if ((ksgn != -1) | (max(abs(result), abs(area)) > defabs*0.1e-01)):
-            if ((0.1e-01 > result/area) | (result/area > 0.1e+03) | (errsum > abs(area))):
+        if ((ksgn != -1) or (max(abs(result), abs(area)) > defabs*0.1e-01)):
+            if ((0.1e-01 > result/area) or (result/area > 0.1e+03) or (errsum > abs(area))):
                 ier = 6
     result = 0.0
     for k in range(last+1):
