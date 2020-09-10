@@ -18,6 +18,17 @@ def test_r1mach(i):
             ported_val = ported_routines.r1mach(i)
 
 
+@pytest.mark.parametrize('i', [1, 2, 3, 4, 5, 6])
+def test_d1mach(i):
+    if i <= 5:
+        fortran_val = f.d1mach(i)
+        ported_val = ported_routines.d1mach(i)    
+        assert(fortran_val == ported_val)
+    else:
+        with pytest.raises(Exception):
+            ported_val = ported_routines.d1mach(i)
+
+
 @pytest.mark.parametrize('fun_args', [
     (lambda x: np.exp(-0.5*x**2), ()),
     (lambda x: np.abs(x)*np.exp(-0.5*x**2), ()),
@@ -134,11 +145,11 @@ def test_qpsrt(params):
 
 @pytest.mark.parametrize('params', [
     ((2, np.array([1.0, 2.0, 2.5]), np.array([0.0, 0.0, 0.0]), 0),
-     (2, np.array([3.0, 2.0, 2.5, 0.0, 2.5]), 3.0, ported_routines.r1mach(2), np.array([3.0, 0.0, 0.0]), 1)),
+     (2, np.array([3.0, 2.0, 2.5, 0.0, 2.5]), 3.0, ported_routines.d1mach(2), np.array([3.0, 0.0, 0.0]), 1)),
     ((3, np.array([3.0, 2.0, 2.5, 2.8, 2.5]), np.array([3.0, 0.0, 0.0]), 1),
-     (3, np.array([3.0, 3.25, 2.5, 2.8, 2.5, 2.8]), 3.25, ported_routines.r1mach(2), np.array([3.0, 3.25, 0.0]), 2)),
+     (3, np.array([3.0, 3.25, 2.5, 2.8, 2.5, 2.8]), 3.25, ported_routines.d1mach(2), np.array([3.0, 3.25, 0.0]), 2)),
     ((4, np.array([3.0, 3.25, 2.5, 2.8, 2.91, 2.8]), np.array([3.0, 3.25, 0.0]), 2),
-     (4, np.array([3.090909, 3.25, 2.97368421, 2.8, 2.91, 2.8, 2.91]), 2.97368421, ported_routines.r1mach(2), np.array([3.0, 3.25, 2.97368421]), 3)),
+     (4, np.array([3.090909, 3.25, 2.97368421, 2.8, 2.91, 2.8, 2.91]), 2.97368421, ported_routines.d1mach(2), np.array([3.0, 3.25, 2.97368421]), 3)),
     ((5, np.array([3.090909, 3.25, 2.97368421, 2.8, 2.91, 2.97, 2.91]), np.array([3.0, 3.25, 2.97368421]), 3),
      (5, np.array([3.090909, 3.01532567, 2.97368421, 3.042, 2.91, 2.97, 2.91, 2.97]), 3.042, 0.3183157, np.array([3.25, 2.97368421, 3.042]), 4)),
 ])
@@ -220,6 +231,8 @@ def test_qelg_iter(iter_cnt, fun):
 
 @pytest.mark.parametrize('fun_args', [
     (lambda x: np.exp(-0.5*x**2), ()),
+    (lambda x: np.sin(x), ()),
+    # (lambda x: x, ())
 ])
 @pytest.mark.parametrize('boun_inf', [
     (0.0, 2),
@@ -248,19 +261,31 @@ def test_qagie(fun_args, boun_inf, epsabs, epsrel, limit):
     ported_output = ported_routines.qagie(fun, bound, inf, epsabs, epsrel, limit, *args)
     fortran_output = f.qagie(f=fun, bound=bound, inf=inf, epsabs=epsabs, epsrel=epsrel, limit=limit, f_extra_args=args)
 
-    epsilon = 1e-4
+    epsilon = 1e-6
 
-    assert np.abs(fortran_output[0] - ported_output[0]) < epsilon
-    assert np.abs(fortran_output[1] - ported_output[1]) < epsilon
-    assert fortran_output[2] == ported_output[2]
-    assert fortran_output[3] == ported_output[3]
-    assert np.max(np.abs(fortran_output[4] - ported_output[4])) < epsilon
-    assert np.max(np.abs(fortran_output[5] - ported_output[5])) < epsilon
-    assert np.max(np.abs(fortran_output[6] - ported_output[6])) < epsilon
-    assert np.max(np.abs(fortran_output[7] - ported_output[7])) < epsilon
-    assert np.max(np.abs(fortran_output[8] - np.array(ported_output[8]))) == 1
-    if limit == 1:
-        assert fortran_output[9] == ported_output[9]
-    else:   
-        assert fortran_output[9] == ported_output[9] + 1
+    assert_equal(fortran_output[0], ported_output[0], epsilon)
+    assert_equal(fortran_output[1], ported_output[1], epsilon)
+    assert_equal(fortran_output[2], ported_output[2], 0.0)
+    assert_equal(fortran_output[3], ported_output[3], 0.0)
+    assert_equal(fortran_output[4], ported_output[4], epsilon)
+    assert_equal(fortran_output[5], ported_output[5], epsilon)
+    assert_equal(fortran_output[6], ported_output[6], epsilon)
+    assert_equal(fortran_output[7], ported_output[7], epsilon)
+    assert_equal(fortran_output[8], ported_output[8], 1.0)
+    assert_equal(fortran_output[9], ported_output[9] + 1, 0.0)
 
+
+def assert_equal(fortran, ported, epsilon):
+    if hasattr(fortran, '__len__'):
+        for i in range(len(fortran)):
+            assert_equal_element(fortran[i], ported[i], epsilon)
+    else:
+        assert_equal_element(fortran, ported, epsilon)
+
+
+def assert_equal_element(fortran, ported, epsilon):
+    if np.abs(fortran) <= 1.0:
+        assert np.abs(fortran - ported) <= epsilon
+    else:
+        assert np.sign(fortran) == np.sign(ported)
+        assert (np.abs(fortran) - np.abs(ported)) / np.abs(fortran) <= epsilon
