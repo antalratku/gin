@@ -680,7 +680,7 @@
 !
 !***end prologue  qelg
 !
-      REAL*8 Abserr , delta1 , delta2 , delta3 , D1MACH , epmach ,        &
+      REAL*8 Abserr , delta1 , delta2 , delta3 , D1MACH , epmach ,      &
          & epsinf , Epstab , error , err1 , err2 , err3 , e0 , e1 ,     &
          & e1abs , e2 , e3 , oflow , res , Result , Res3la , ss , tol1 ,&
          & tol2 , tol3
@@ -903,9 +903,9 @@
 !***routines called  d1mach
 !***end prologue  qk15i
 !
-      REAL*8 A , absc , absc1 , absc2 , Abserr , B , Boun , centr , dinf ,&
-         & D1MACH , epmach , fc , fsum , fval1 , fval2 , fvalt , fv1 ,  &
-         & fv2 , hlgth , Resabs , Resasc , resg , resk , reskh ,        &
+      REAL*8 A , absc , absc1 , absc2 , Abserr , B , Boun , centr ,     &
+         & dinf , D1MACH , epmach , fc , fsum , fval1 , fval2 , fvalt , &
+         & fv1 , fv2 , hlgth , Resabs , Resasc , resg , resk , reskh ,  &
          & Result , tabsc1 , tabsc2 , uflow , wg , wgk , xgk
       INTEGER Inf , j , MIN0
       EXTERNAL F
@@ -1022,7 +1022,7 @@
       Resabs = Resabs*hlgth
       Abserr = ABS((resk-resg)*hlgth)
       IF ( Resasc/=0.0E+00 .AND. Abserr/=0.E0 )                         &
-         & Abserr = Resasc*AMIN1(0.1E+01,(0.2E+03*Abserr/Resasc)        &
+         & Abserr = Resasc*MIN(0.1E+01,(0.2E+03*Abserr/Resasc)          &
          & **1.5E+00)
       IF ( Resabs>uflow/(0.5E+02*epmach) )                              &
          & Abserr = MAX((epmach*0.5E+02)*Resabs,Abserr)
@@ -1185,7 +1185,7 @@
 !***routines called  qelg,qk15i,qpsrt,d1mach
 !***end prologue  qagie
 !
-      REAL*8 abseps , Abserr , Alist , area , area1 , area12 , area2 ,    &
+      REAL*8 abseps , Abserr , Alist , area , area1 , area12 , area2 ,  &
          & a1 , a2 , Blist , boun , Bound , b1 , b2 , correc , defabs , &
          & defab1 , defab2 , dres , D1MACH , Elist , epmach , Epsabs ,  &
          & Epsrel , erlarg , erlast , errbnd , errmax , error1 ,        &
@@ -1270,7 +1270,7 @@
       Rlist(1) = 0.0E+00
       Elist(1) = 0.0E+00
       Iord(1) = 0
-      IF ( Epsabs<=0.0E+00 .AND. Epsrel<MAX(0.5E+02*epmach,0.5E-14) ) &
+      IF ( Epsabs<=0.0E+00 .AND. Epsrel<MAX(0.5E+02*epmach,0.5E-14) )   &
          & Ier = 6
       IF ( Ier==6 ) GOTO 99999
 !
@@ -1373,7 +1373,7 @@
 !           set error flag in the case of bad integrand behaviour
 !           at some points of the integration range.
 !
-         IF ( MAX(ABS(a1),ABS(b2))<=(0.1E+01+0.1E+03*epmach)          &
+         IF ( MAX(ABS(a1),ABS(b2))<=(0.1E+01+0.1E+03*epmach)            &
             & *(ABS(a2)+0.1E+04*uflow) ) Ier = 4
 !
 !           append the newly-created intervals to the list.
@@ -1483,7 +1483,7 @@
 !
 !           test on divergence
 !
-         IF ( ksgn/=(-1) .OR. MAX(ABS(Result),ABS(area))              &
+         IF ( ksgn/=(-1) .OR. MAX(ABS(Result),ABS(area))                &
             & >defabs*0.1E-01 ) THEN
             IF ( 0.1E-01>(Result/area) .OR. (Result/area)>0.1E+03 .OR.  &
                & errsum>ABS(area) ) Ier = 6
@@ -1563,9 +1563,9 @@
 !***routines called  d1mach
 !***end prologue  qk21
 !
-      REAL*8 A , absc , Abserr , B , centr , dhlgth , epmach , fc , fsum ,&
-         & fval1 , fval2 , fv1 , fv2 , hlgth , Resabs , resg , resk ,   &
-         & reskh , Result , D1MACH , uflow , wg , wgk , xgk
+      REAL*8 A , absc , Abserr , B , centr , dhlgth , epmach , fc ,     &
+         & fsum , fval1 , fval2 , fv1 , fv2 , hlgth , Resabs , resg ,   &
+         & resk , reskh , Result , D1MACH , uflow , wg , wgk , xgk
       INTEGER j , jtw , jtwm1
       EXTERNAL F
 !
@@ -1676,7 +1676,7 @@
       Resasc = Resasc*dhlgth
       Abserr = ABS((resk-resg)*hlgth)
       IF ( Resasc/=0.0E+00 .AND. Abserr/=0.0E+00 )                      &
-         & Abserr = Resasc*AMIN1(0.1E+01,(0.2E+03*Abserr/Resasc)        &
+         & Abserr = Resasc*MIN(0.1E+01,(0.2E+03*Abserr/Resasc)          &
          & **1.5E+00)
       IF ( Resabs>uflow/(0.5E+02*epmach) )                              &
          & Abserr = MAX((epmach*0.5E+02)*Resabs,Abserr)
@@ -1878,13 +1878,13 @@
 !***references  (none)
 !***routines called  qelg,qk21,qpsrt,d1mach
 !***end prologue  qagpe
-      REAL*8 A , abseps , Abserr , Alist , area , area1 , area12 , area2 ,&
-         & a1 , a2 , B , Blist , b1 , b2 , correc , defabs , defab1 ,   &
-         & defab2 , dres , D1MACH , Elist , epmach , Epsabs , Epsrel ,  &
-         & erlarg , erlast , errbnd , errmax , error1 , erro12 ,        &
-         & error2 , errsum , ertest , oflow , Points , Pts , resa ,     &
-         & resabs , reseps , Result , res3la , Rlist , rlist2 , sign ,  &
-         & temp , uflow
+      REAL*8 A , abseps , Abserr , Alist , area , area1 , area12 ,      &
+         & area2 , a1 , a2 , B , Blist , b1 , b2 , correc , defabs ,    &
+         & defab1 , defab2 , dres , D1MACH , Elist , epmach , Epsabs ,  &
+         & Epsrel , erlarg , erlast , errbnd , errmax , error1 ,        &
+         & erro12 , error2 , errsum , ertest , oflow , Points , Pts ,   &
+         & resa , resabs , reseps , Result , res3la , Rlist , rlist2 ,  &
+         & sign , temp , uflow
       INTEGER i , id , Ier , ierro , ind1 , ind2 , Iord , ip1 , iroff1 ,&
             & iroff2 , iroff3 , j , jlow , jupbnd , k , ksgn , ktmin ,  &
             & Last , levcur , Level , levmax , Limit , maxerr , Ndin ,  &
@@ -1970,7 +1970,7 @@
       Level(1) = 0
       npts = Npts2 - 2
       IF ( Npts2<2 .OR. Limit<=npts .OR.                                &
-         & (Epsabs<=0.0E+00 .AND. Epsrel<MAX(0.5E+02*epmach,0.5E-14)) &
+         & (Epsabs<=0.0E+00 .AND. Epsrel<MAX(0.5E+02*epmach,0.5E-14))   &
          & ) Ier = 6
       IF ( Ier/=6 ) THEN
 !
@@ -1979,7 +1979,7 @@
 !
          sign = 1.0E+00
          IF ( A>B ) sign = -1.0E+00
-         Pts(1) = AMIN1(A,B)
+         Pts(1) = MIN(A,B)
          IF ( npts/=0 ) THEN
             DO i = 1 , npts
                Pts(i+1) = Points(i)
@@ -2000,7 +2000,7 @@
                   ENDIF
                ENDDO
             ENDDO
-            IF ( Pts(1)/=AMIN1(A,B) .OR. Pts(nintp1)/=MAX(A,B) )      &
+            IF ( Pts(1)/=MIN(A,B) .OR. Pts(nintp1)/=MAX(A,B) )          &
                & Ier = 6
             IF ( Ier==6 ) GOTO 99999
          ENDIF
@@ -2138,7 +2138,7 @@
 !           set error flag in the case of bad integrand behaviour
 !           at a point of the integration range
 !
-            IF ( MAX(ABS(a1),ABS(b2))<=(0.1E+01+0.1E+03*epmach)       &
+            IF ( MAX(ABS(a1),ABS(b2))<=(0.1E+01+0.1E+03*epmach)         &
                & *(ABS(a2)+0.1E+04*uflow) ) Ier = 4
 !
 !           append the newly-created intervals to the list.
@@ -2250,7 +2250,7 @@
 !
 !           test on divergence.
 !
-            IF ( ksgn/=(-1) .OR. MAX(ABS(Result),ABS(area))           &
+            IF ( ksgn/=(-1) .OR. MAX(ABS(Result),ABS(area))             &
                & >resabs*0.1E-01 ) THEN
                IF ( 0.1E-01>(Result/area) .OR. (Result/area)            &
                   & >0.1E+03 .OR. errsum>ABS(area) ) Ier = 6
