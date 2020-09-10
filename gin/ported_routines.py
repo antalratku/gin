@@ -330,6 +330,7 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
             neval = 2*neval
         if (ier > 2):
             ier = ier -1
+        last = 0
         return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
     uflow = d1mach(1)
     oflow = d1mach(2)
@@ -501,6 +502,12 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
         if ((ksgn != -1) or (max(abs(result), abs(area)) > defabs*0.1e-01)):
             if ((0.1e-01 > result/area) or (result/area > 0.1e+03) or (errsum > abs(area))):
                 ier = 6
+        neval = 30*(last+1) - 15
+        if (inf == 2):
+            neval = 2*neval
+        if (ier > 2):
+            ier = ier - 1
+        return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
     result = 0.0
     for k in range(last+1):
         result = result + rlist[k]
