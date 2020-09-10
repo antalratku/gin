@@ -750,19 +750,19 @@
 !           a part of the table by adjusting the value of n
 !
                IF ( err1>tol1 .AND. err2>tol2 .AND. err3>tol3 ) THEN
-                  ss = 0.1E+01/delta1 + 0.1E+01/delta2 - 0.1E+01/delta3
+                  ss = 0.1D+01/delta1 + 0.1D+01/delta2 - 0.1D+01/delta3
                   epsinf = ABS(ss*e1)
 !
 !           test to detect irregular behaviour in the table, and
 !           eventually omit a part of the table adjusting the value
 !           of n.
 !
-                  IF ( epsinf>0.1E-03 ) THEN
+                  IF ( epsinf>0.1D-03 ) THEN
 !
 !           compute a new element and eventually adjust
 !           the value of result.
 !
-                     res = e1 + 0.1E+01/ss
+                     res = e1 + 0.1D+01/ss
                      Epstab(k1) = res
                      k1 = k1 - 2
                      error = err2 + ABS(res-e2) + err3
@@ -822,7 +822,7 @@
             Abserr = oflow
          ENDIF
       ENDIF
- 200  Abserr = MAX(Abserr,0.5E+01*epmach*ABS(Result))
+ 200  Abserr = MAX(Abserr,0.5D+01*epmach*ABS(Result))
       END
 
 
@@ -907,7 +907,7 @@
          & dinf , D1MACH , epmach , fc , fsum , fval1 , fval2 , fvalt , &
          & fv1 , fv2 , hlgth , Resabs , Resasc , resg , resk , reskh ,  &
          & Result , tabsc1 , tabsc2 , uflow , wg , wgk , xgk
-      INTEGER Inf , j , MIN0
+      INTEGER Inf , j , MIN
       EXTERNAL F
 !
       DIMENSION fv1(7) , fv2(7) , xgk(8) , wgk(8) , wg(8)
@@ -929,22 +929,22 @@
 !                    wg(1), wg(3), ... are set to zero.
 !
       DATA xgk(1) , xgk(2) , xgk(3) , xgk(4) , xgk(5) , xgk(6) , xgk(7) &
-         & , xgk(8)/0.9914553711208126E+00 , 0.9491079123427585E+00 ,   &
-         & 0.8648644233597691E+00 , 0.7415311855993944E+00 ,            &
-         & 0.5860872354676911E+00 , 0.4058451513773972E+00 ,            &
-         & 0.2077849550078985E+00 , 0.0000000000000000E+00/
+         & , xgk(8)/0.9914553711208126D+00 , 0.9491079123427585D+00 ,   &
+         & 0.8648644233597691D+00 , 0.7415311855993944D+00 ,            &
+         & 0.5860872354676911D+00 , 0.4058451513773972D+00 ,            &
+         & 0.2077849550078985D+00 , 0.0000000000000000D+00/
 !
       DATA wgk(1) , wgk(2) , wgk(3) , wgk(4) , wgk(5) , wgk(6) , wgk(7) &
-         & , wgk(8)/0.2293532201052922E-01 , 0.6309209262997855E-01 ,   &
-         & 0.1047900103222502E+00 , 0.1406532597155259E+00 ,            &
-         & 0.1690047266392679E+00 , 0.1903505780647854E+00 ,            &
-         & 0.2044329400752989E+00 , 0.2094821410847278E+00/
+         & , wgk(8)/0.2293532201052922D-01 , 0.6309209262997855D-01 ,   &
+         & 0.1047900103222502D+00 , 0.1406532597155259D+00 ,            &
+         & 0.1690047266392679D+00 , 0.1903505780647854D+00 ,            &
+         & 0.2044329400752989D+00 , 0.2094821410847278D+00/
 !
       DATA wg(1) , wg(2) , wg(3) , wg(4) , wg(5) , wg(6) , wg(7) ,      &
-         & wg(8)/0.0000000000000000E+00 , 0.1294849661688697E+00 ,      &
-         & 0.0000000000000000E+00 , 0.2797053914892767E+00 ,            &
-         & 0.0000000000000000E+00 , 0.3818300505051189E+00 ,            &
-         & 0.0000000000000000E+00 , 0.4179591836734694E+00/
+         & wg(8)/0.0000000000000000D+00 , 0.1294849661688697D+00 ,      &
+         & 0.0000000000000000D+00 , 0.2797053914892767D+00 ,            &
+         & 0.0000000000000000D+00 , 0.3818300505051189D+00 ,            &
+         & 0.0000000000000000D+00 , 0.4179591836734694D+00/
 !
 !
 !           list of major variables
@@ -969,11 +969,11 @@
 !***first executable statement  qk15i
       epmach = D1MACH(4)
       uflow = D1MACH(1)
-      dinf = MIN0(1,Inf)
+      dinf = MIN(1,Inf)
 !
-      centr = 0.5E+00*(A+B)
-      hlgth = 0.5E+00*(B-A)
-      tabsc1 = Boun + dinf*(0.1E+01-centr)/centr
+      centr = 0.5D+00*(A+B)
+      hlgth = 0.5D+00*(B-A)
+      tabsc1 = Boun + dinf*(0.1D+01-centr)/centr
       CALL F(tabsc1,fval1)
       IF ( Inf==2 ) THEN
          CALL F(-tabsc1,fvalt)
@@ -991,8 +991,8 @@
          absc = hlgth*xgk(j)
          absc1 = centr - absc
          absc2 = centr + absc
-         tabsc1 = Boun + dinf*(0.1E+01-absc1)/absc1
-         tabsc2 = Boun + dinf*(0.1E+01-absc2)/absc2
+         tabsc1 = Boun + dinf*(0.1D+01-absc1)/absc1
+         tabsc2 = Boun + dinf*(0.1D+01-absc2)/absc2
          CALL F(tabsc1,fval1)
          CALL F(tabsc2,fval2)
          IF ( Inf==2 ) THEN
@@ -1012,7 +1012,7 @@
          resk = resk + wgk(j)*fsum
          Resabs = Resabs + wgk(j)*(ABS(fval1)+ABS(fval2))
       ENDDO
-      reskh = resk*0.5E+00
+      reskh = resk*0.5D+00
       Resasc = wgk(8)*ABS(fc-reskh)
       DO j = 1 , 7
          Resasc = Resasc + wgk(j)*(ABS(fv1(j)-reskh)+ABS(fv2(j)-reskh))
@@ -1021,11 +1021,11 @@
       Resasc = Resasc*hlgth
       Resabs = Resabs*hlgth
       Abserr = ABS((resk-resg)*hlgth)
-      IF ( Resasc/=0.0E+00 .AND. Abserr/=0.E0 )                         &
-         & Abserr = Resasc*MIN(0.1E+01,(0.2E+03*Abserr/Resasc)          &
-         & **1.5E+00)
-      IF ( Resabs>uflow/(0.5E+02*epmach) )                              &
-         & Abserr = MAX((epmach*0.5E+02)*Resabs,Abserr)
+      IF ( Resasc/=0.0D+00 .AND. Abserr/=0.E0 )                         &
+         & Abserr = Resasc*MIN(0.1D+01,(0.2D+03*Abserr/Resasc)          &
+         & **1.5D+00)
+      IF ( Resabs>uflow/(0.5D+02*epmach) )                              &
+         & Abserr = MAX((epmach*0.5D+02)*Resabs,Abserr)
       END
 
 
@@ -1263,14 +1263,14 @@
       Ier = 0
       Neval = 0
       Last = 0
-      Result = 0.0E+00
-      Abserr = 0.0E+00
-      Alist(1) = 0.0E+00
-      Blist(1) = 0.1E+01
-      Rlist(1) = 0.0E+00
-      Elist(1) = 0.0E+00
+      Result = 0.0D+00
+      Abserr = 0.0D+00
+      Alist(1) = 0.0D+00
+      Blist(1) = 0.1D+01
+      Rlist(1) = 0.0D+00
+      Elist(1) = 0.0D+00
       Iord(1) = 0
-      IF ( Epsabs<=0.0E+00 .AND. Epsrel<MAX(0.5E+02*epmach,0.5E-14) )   &
+      IF ( Epsabs<=0.0D+00 .AND. Epsrel<MAX(0.5D+02*epmach,0.5D-14) )   &
          & Ier = 6
       IF ( Ier==6 ) GOTO 99999
 !
@@ -1284,8 +1284,8 @@
 !           i2 = integral of f over (0,+infinity).
 !
       boun = Bound
-      IF ( Inf==2 ) boun = 0.0E+00
-      CALL QK15I(F,boun,Inf,0.0E+00,0.1E+01,Result,Abserr,defabs,resabs)
+      IF ( Inf==2 ) boun = 0.0D+00
+      CALL QK15I(F,boun,Inf,0.0D+00,0.1D+01,Result,Abserr,defabs,resabs)
 !
 !           test on accuracy
 !
@@ -1295,10 +1295,10 @@
       Iord(1) = 1
       dres = ABS(Result)
       errbnd = MAX(Epsabs,Epsrel*dres)
-      IF ( Abserr<=1.0E+02*epmach*defabs .AND. Abserr>errbnd ) Ier = 2
+      IF ( Abserr<=1.0D+02*epmach*defabs .AND. Abserr>errbnd ) Ier = 2
       IF ( Limit==1 ) Ier = 1
       IF ( Ier/=0 .OR. (Abserr<=errbnd .AND. Abserr/=resabs) .OR.       &
-         & Abserr==0.0E+00 ) GOTO 400
+         & Abserr==0.0D+00 ) GOTO 400
 !
 !           initialization
 !           --------------
@@ -1322,7 +1322,7 @@
       iroff2 = 0
       iroff3 = 0
       ksgn = -1
-      IF ( dres>=(0.1E+01-0.5E+02*epmach)*defabs ) ksgn = 1
+      IF ( dres>=(0.1D+01-0.5D+02*epmach)*defabs ) ksgn = 1
 !
 !           main do-loop
 !           ------------
@@ -1333,7 +1333,7 @@
 !           error estimate.
 !
          a1 = Alist(maxerr)
-         b1 = 0.5E+00*(Alist(maxerr)+Blist(maxerr))
+         b1 = 0.5D+00*(Alist(maxerr)+Blist(maxerr))
          a2 = b1
          b2 = Blist(maxerr)
          erlast = errmax
@@ -1348,8 +1348,8 @@
          errsum = errsum + erro12 - errmax
          area = area + area12 - Rlist(maxerr)
          IF ( defab1/=error1 .AND. defab2/=error2 ) THEN
-            IF ( ABS(Rlist(maxerr)-area12)<=0.1E-04*ABS(area12) .AND.   &
-               & erro12>=0.99E+00*errmax ) THEN
+            IF ( ABS(Rlist(maxerr)-area12)<=0.1D-04*ABS(area12) .AND.   &
+               & erro12>=0.99D+00*errmax ) THEN
                IF ( extrap ) iroff2 = iroff2 + 1
                IF ( .NOT.extrap ) iroff1 = iroff1 + 1
             ENDIF
@@ -1373,8 +1373,8 @@
 !           set error flag in the case of bad integrand behaviour
 !           at some points of the integration range.
 !
-         IF ( MAX(ABS(a1),ABS(b2))<=(0.1E+01+0.1E+03*epmach)            &
-            & *(ABS(a2)+0.1E+04*uflow) ) Ier = 4
+         IF ( MAX(ABS(a1),ABS(b2))<=(0.1D+01+0.1D+03*epmach)            &
+            & *(ABS(a2)+0.1D+04*uflow) ) Ier = 4
 !
 !           append the newly-created intervals to the list.
 !
@@ -1403,7 +1403,7 @@
          IF ( errsum<=errbnd ) GOTO 300
          IF ( Ier/=0 ) GOTO 200
          IF ( Last==2 ) THEN
-            small = 0.375E+00
+            small = 0.375D+00
             erlarg = errsum
             ertest = errbnd
             rlist2(2) = area
@@ -1443,7 +1443,7 @@
             rlist2(numrl2) = area
             CALL QELG(numrl2,rlist2,reseps,abseps,res3la,nres)
             ktmin = ktmin + 1
-            IF ( ktmin>5 .AND. Abserr<0.1E-02*errsum ) Ier = 5
+            IF ( ktmin>5 .AND. Abserr<0.1D-02*errsum ) Ier = 5
             IF ( abseps<Abserr ) THEN
                ktmin = 0
                Abserr = abseps
@@ -1461,7 +1461,7 @@
             errmax = Elist(maxerr)
             nrmax = 1
             extrap = .FALSE.
-            small = small*0.5E+00
+            small = small*0.5D+00
             erlarg = errsum
          ENDIF
  100  ENDDO
@@ -1473,9 +1473,9 @@
          IF ( (Ier+ierro)/=0 ) THEN
             IF ( ierro==3 ) Abserr = Abserr + correc
             IF ( Ier==0 ) Ier = 3
-            IF ( Result==0.0E+00 .OR. area==0.0E+00 ) THEN
+            IF ( Result==0.0D+00 .OR. area==0.0D+00 ) THEN
                IF ( Abserr>errsum ) GOTO 300
-               IF ( area==0.0E+00 ) GOTO 400
+               IF ( area==0.0D+00 ) GOTO 400
             ELSEIF ( Abserr/ABS(Result)>errsum/ABS(area) ) THEN
                GOTO 300
             ENDIF
@@ -1484,8 +1484,8 @@
 !           test on divergence
 !
          IF ( ksgn/=(-1) .OR. MAX(ABS(Result),ABS(area))                &
-            & >defabs*0.1E-01 ) THEN
-            IF ( 0.1E-01>(Result/area) .OR. (Result/area)>0.1E+03 .OR.  &
+            & >defabs*0.1D-01 ) THEN
+            IF ( 0.1D-01>(Result/area) .OR. (Result/area)>0.1D+03 .OR.  &
                & errsum>ABS(area) ) Ier = 6
          ENDIF
          GOTO 400
@@ -1493,7 +1493,7 @@
 !
 !           compute global integral sum.
 !
- 300  Result = 0.0E+00
+ 300  Result = 0.0D+00
       DO k = 1 , Last
          Result = Result + Rlist(k)
       ENDDO
@@ -1587,26 +1587,26 @@
 !
       DATA xgk(1) , xgk(2) , xgk(3) , xgk(4) , xgk(5) , xgk(6) , xgk(7) &
          & , xgk(8) , xgk(9) , xgk(10) , xgk(11)                        &
-         & /0.9956571630258081E+00 , 0.9739065285171717E+00 ,           &
-         & 0.9301574913557082E+00 , 0.8650633666889845E+00 ,            &
-         & 0.7808177265864169E+00 , 0.6794095682990244E+00 ,            &
-         & 0.5627571346686047E+00 , 0.4333953941292472E+00 ,            &
-         & 0.2943928627014602E+00 , 0.1488743389816312E+00 ,            &
-         & 0.0000000000000000E+00/
+         & /0.9956571630258081D+00 , 0.9739065285171717D+00 ,           &
+         & 0.9301574913557082D+00 , 0.8650633666889845D+00 ,            &
+         & 0.7808177265864169D+00 , 0.6794095682990244D+00 ,            &
+         & 0.5627571346686047D+00 , 0.4333953941292472D+00 ,            &
+         & 0.2943928627014602D+00 , 0.1488743389816312D+00 ,            &
+         & 0.0000000000000000D+00/
 !
       DATA wgk(1) , wgk(2) , wgk(3) , wgk(4) , wgk(5) , wgk(6) , wgk(7) &
          & , wgk(8) , wgk(9) , wgk(10) , wgk(11)                        &
-         & /0.1169463886737187E-01 , 0.3255816230796473E-01 ,           &
-         & 0.5475589657435200E-01 , 0.7503967481091995E-01 ,            &
-         & 0.9312545458369761E-01 , 0.1093871588022976E+00 ,            &
-         & 0.1234919762620659E+00 , 0.1347092173114733E+00 ,            &
-         & 0.1427759385770601E+00 , 0.1477391049013385E+00 ,            &
-         & 0.1494455540029169E+00/
+         & /0.1169463886737187D-01 , 0.3255816230796473D-01 ,           &
+         & 0.5475589657435200D-01 , 0.7503967481091995D-01 ,            &
+         & 0.9312545458369761D-01 , 0.1093871588022976D+00 ,            &
+         & 0.1234919762620659D+00 , 0.1347092173114733D+00 ,            &
+         & 0.1427759385770601D+00 , 0.1477391049013385D+00 ,            &
+         & 0.1494455540029169D+00/
 !
       DATA wg(1) , wg(2) , wg(3) , wg(4) ,                              &
-         & wg(5)/0.6667134430868814E-01 , 0.1494513491505806E+00 ,      &
-         & 0.2190863625159820E+00 , 0.2692667193099964E+00 ,            &
-         & 0.2955242247147529E+00/
+         & wg(5)/0.6667134430868814D-01 , 0.1494513491505806D+00 ,      &
+         & 0.2190863625159820D+00 , 0.2692667193099964D+00 ,            &
+         & 0.2955242247147529D+00/
 !
 !
 !           list of major variables
@@ -1632,14 +1632,14 @@
       epmach = D1MACH(4)
       uflow = D1MACH(1)
 !
-      centr = 0.5E+00*(A+B)
-      hlgth = 0.5E+00*(B-A)
+      centr = 0.5D+00*(A+B)
+      hlgth = 0.5D+00*(B-A)
       dhlgth = ABS(hlgth)
 !
 !           compute the 21-point kronrod approximation to
 !           the integral, and estimate the absolute error.
 !
-      resg = 0.0E+00
+      resg = 0.0D+00
       CALL F(centr,fc)
       resk = wgk(11)*fc
       Resabs = ABS(resk)
@@ -1666,7 +1666,7 @@
          resk = resk + wgk(jtwm1)*fsum
          Resabs = Resabs + wgk(jtwm1)*(ABS(fval1)+ABS(fval2))
       ENDDO
-      reskh = resk*0.5E+00
+      reskh = resk*0.5D+00
       Resasc = wgk(11)*ABS(fc-reskh)
       DO j = 1 , 10
          Resasc = Resasc + wgk(j)*(ABS(fv1(j)-reskh)+ABS(fv2(j)-reskh))
@@ -1675,11 +1675,11 @@
       Resabs = Resabs*dhlgth
       Resasc = Resasc*dhlgth
       Abserr = ABS((resk-resg)*hlgth)
-      IF ( Resasc/=0.0E+00 .AND. Abserr/=0.0E+00 )                      &
-         & Abserr = Resasc*MIN(0.1E+01,(0.2E+03*Abserr/Resasc)          &
-         & **1.5E+00)
-      IF ( Resabs>uflow/(0.5E+02*epmach) )                              &
-         & Abserr = MAX((epmach*0.5E+02)*Resabs,Abserr)
+      IF ( Resasc/=0.0D+00 .AND. Abserr/=0.0D+00 )                      &
+         & Abserr = Resasc*MIN(0.1D+01,(0.2D+03*Abserr/Resasc)          &
+         & **1.5D+00)
+      IF ( Resabs>uflow/(0.5D+02*epmach) )                              &
+         & Abserr = MAX((epmach*0.5D+02)*Resabs,Abserr)
       END
 
 
@@ -1960,25 +1960,25 @@
       Ier = 0
       Neval = 0
       Last = 0
-      Result = 0.0E+00
-      Abserr = 0.0E+00
+      Result = 0.0D+00
+      Abserr = 0.0D+00
       Alist(1) = A
       Blist(1) = B
-      Rlist(1) = 0.0E+00
-      Elist(1) = 0.0E+00
+      Rlist(1) = 0.0D+00
+      Elist(1) = 0.0D+00
       Iord(1) = 0
       Level(1) = 0
       npts = Npts2 - 2
       IF ( Npts2<2 .OR. Limit<=npts .OR.                                &
-         & (Epsabs<=0.0E+00 .AND. Epsrel<MAX(0.5E+02*epmach,0.5E-14))   &
+         & (Epsabs<=0.0D+00 .AND. Epsrel<MAX(0.5D+02*epmach,0.5D-14))   &
          & ) Ier = 6
       IF ( Ier/=6 ) THEN
 !
 !            if any break points are provided, sort them into an
 !            ascending sequence.
 !
-         sign = 1.0E+00
-         IF ( A>B ) sign = -1.0E+00
+         sign = 1.0D+00
+         IF ( A>B ) sign = -1.0D+00
          Pts(1) = MIN(A,B)
          IF ( npts/=0 ) THEN
             DO i = 1 , npts
@@ -2008,14 +2008,14 @@
 !            compute first integral and error approximations.
 !            ------------------------------------------------
 !
-         resabs = 0.0E+00
+         resabs = 0.0D+00
          DO i = 1 , nint
             b1 = Pts(i+1)
             CALL QK21(F,a1,b1,area1,error1,defabs,resa)
             Abserr = Abserr + error1
             Result = Result + area1
             Ndin(i) = 0
-            IF ( error1==resa .AND. error1/=0.0E+00 ) Ndin(i) = 1
+            IF ( error1==resa .AND. error1/=0.0D+00 ) Ndin(i) = 1
             resabs = resabs + defabs
             Level(i) = 0
             Elist(i) = error1
@@ -2025,7 +2025,7 @@
             Iord(i) = i
             a1 = b1
          ENDDO
-         errsum = 0.0E+00
+         errsum = 0.0D+00
          DO i = 1 , nint
             IF ( Ndin(i)==1 ) Elist(i) = Abserr
             errsum = errsum + Elist(i)
@@ -2037,7 +2037,7 @@
          Neval = 21*nint
          dres = ABS(Result)
          errbnd = MAX(Epsabs,Epsrel*dres)
-         IF ( Abserr<=0.1E+03*epmach*resabs .AND. Abserr>errbnd )       &
+         IF ( Abserr<=0.1D+03*epmach*resabs .AND. Abserr>errbnd )       &
             & Ier = 2
          IF ( nint/=1 ) THEN
             DO i = 1 , npts
@@ -2083,7 +2083,7 @@
          oflow = D1MACH(2)
          Abserr = oflow
          ksgn = -1
-         IF ( dres>=(0.1E+01-0.5E+02*epmach)*resabs ) ksgn = 1
+         IF ( dres>=(0.1D+01-0.5D+02*epmach)*resabs ) ksgn = 1
 !
 !           main do-loop
 !           ------------
@@ -2095,7 +2095,7 @@
 !
             levcur = Level(maxerr) + 1
             a1 = Alist(maxerr)
-            b1 = 0.5E+00*(Alist(maxerr)+Blist(maxerr))
+            b1 = 0.5D+00*(Alist(maxerr)+Blist(maxerr))
             a2 = b1
             b2 = Blist(maxerr)
             erlast = errmax
@@ -2111,8 +2111,8 @@
             errsum = errsum + erro12 - errmax
             area = area + area12 - Rlist(maxerr)
             IF ( defab1/=error1 .AND. defab2/=error2 ) THEN
-               IF ( ABS(Rlist(maxerr)-area12)<=0.1E-04*ABS(area12) .AND.&
-                  & erro12>=0.99E+00*errmax ) THEN
+               IF ( ABS(Rlist(maxerr)-area12)<=0.1D-04*ABS(area12) .AND.&
+                  & erro12>=0.99D+00*errmax ) THEN
                   IF ( extrap ) iroff2 = iroff2 + 1
                   IF ( .NOT.extrap ) iroff1 = iroff1 + 1
                ENDIF
@@ -2138,8 +2138,8 @@
 !           set error flag in the case of bad integrand behaviour
 !           at a point of the integration range
 !
-            IF ( MAX(ABS(a1),ABS(b2))<=(0.1E+01+0.1E+03*epmach)         &
-               & *(ABS(a2)+0.1E+04*uflow) ) Ier = 4
+            IF ( MAX(ABS(a1),ABS(b2))<=(0.1D+01+0.1D+03*epmach)         &
+               & *(ABS(a2)+0.1D+04*uflow) ) Ier = 4
 !
 !           append the newly-created intervals to the list.
 !
@@ -2207,7 +2207,7 @@
                IF ( numrl2>2 ) THEN
                   CALL QELG(numrl2,rlist2,reseps,abseps,res3la,nres)
                   ktmin = ktmin + 1
-                  IF ( ktmin>5 .AND. Abserr<0.1E-02*errsum ) Ier = 5
+                  IF ( ktmin>5 .AND. Abserr<0.1D-02*errsum ) Ier = 5
                   IF ( abseps<Abserr ) THEN
                      ktmin = 0
                      Abserr = abseps
@@ -2240,9 +2240,9 @@
             IF ( (Ier+ierro)/=0 ) THEN
                IF ( ierro==3 ) Abserr = Abserr + correc
                IF ( Ier==0 ) Ier = 3
-               IF ( Result==0.0E+00 .OR. area==0.0E+00 ) THEN
+               IF ( Result==0.0D+00 .OR. area==0.0D+00 ) THEN
                   IF ( Abserr>errsum ) GOTO 150
-                  IF ( area==0.0E+00 ) GOTO 200
+                  IF ( area==0.0D+00 ) GOTO 200
                ELSEIF ( Abserr/ABS(Result)>errsum/ABS(area) ) THEN
                   GOTO 150
                ENDIF
@@ -2251,16 +2251,16 @@
 !           test on divergence.
 !
             IF ( ksgn/=(-1) .OR. MAX(ABS(Result),ABS(area))             &
-               & >resabs*0.1E-01 ) THEN
-               IF ( 0.1E-01>(Result/area) .OR. (Result/area)            &
-                  & >0.1E+03 .OR. errsum>ABS(area) ) Ier = 6
+               & >resabs*0.1D-01 ) THEN
+               IF ( 0.1D-01>(Result/area) .OR. (Result/area)            &
+                  & >0.1D+03 .OR. errsum>ABS(area) ) Ier = 6
             ENDIF
             GOTO 200
          ENDIF
 !
 !           compute global integral sum.
 !
- 150     Result = 0.0E+00
+ 150     Result = 0.0D+00
          DO k = 1 , Last
             Result = Result + Rlist(k)
          ENDDO
