@@ -328,8 +328,6 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
         neval = 30*last-15
         if (inf == 2):
             neval = 2*neval
-        if (ier > 2):
-            ier = ier -1
         last = 0
         return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
     uflow = d1mach(1)

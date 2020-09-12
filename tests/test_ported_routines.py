@@ -195,9 +195,9 @@ def test_qelg(params):
 
 @pytest.mark.parametrize('iter_cnt', np.arange(1, 100))
 @pytest.mark.parametrize('fun', [
-    lambda i: 2 + np.sum(1/(2**np.arange(0, i))),
-    lambda i: 2 + np.sum((-1/2)**np.arange(0, i)),
-    lambda i: np.sin((i+1)*np.pi/8)/((i+1)**2)
+    lambda x: 2 + np.sum(1/(2**np.arange(0, x))),
+    lambda x: 2 + np.sum((-1/2)**np.arange(0, x)),
+    lambda x: np.sin((x+1)*np.pi/8)/((x+1)**2),
 ])
 def test_qelg_iter(iter_cnt, fun):
     epstab = np.zeros(52, dtype=np.float)
@@ -232,7 +232,9 @@ def test_qelg_iter(iter_cnt, fun):
 @pytest.mark.parametrize('fun_args', [
     (lambda x: np.exp(-0.5*x**2), ()),
     (lambda x: np.sin(x), ()),
-    (lambda x: x, ())
+    (lambda x: x, ()),
+    (lambda x: np.sin(x*x), ()),
+    (lambda x: np.sin(1/x), ()),
 ])
 @pytest.mark.parametrize('boun_inf', [
     (0.0, 2),
@@ -273,6 +275,40 @@ def test_qagie(fun_args, boun_inf, epsabs, epsrel, limit):
     assert_equal(fortran_output[7], ported_output[7], epsilon)
     assert_equal(fortran_output[8], ported_output[8], 1.0)
     assert_equal(fortran_output[9], ported_output[9] + 1, 0.0)
+
+
+@pytest.mark.parametrize('params', [
+    (lambda x: x, 0.0, 1, -1.49e-08, -1.49e-08, 10, ()),
+])
+def test_qagie_special(params):
+    fun = params[0]
+    bound = params[1]
+    inf = params[2]
+    epsabs = params[3]
+    epsrel = params[4]
+    limit = params[5]
+    args = params[6]
+
+    ported_output = ported_routines.qagie(fun, bound, inf, epsabs, epsrel, limit, *args)
+    fortran_output = f.qagie(f=fun, bound=bound, inf=inf, epsabs=epsabs, epsrel=epsrel, limit=limit, f_extra_args=args)
+
+    epsilon = 1e-6
+
+    assert_equal(fortran_output[0], ported_output[0], epsilon)
+    assert_equal(fortran_output[1], ported_output[1], epsilon)
+    assert_equal(fortran_output[2], ported_output[2], 0.0)
+    assert_equal(fortran_output[3], ported_output[3], 0.0)
+    assert_equal(fortran_output[4], ported_output[4], epsilon)
+    assert_equal(fortran_output[5], ported_output[5], epsilon)
+    assert_equal(fortran_output[6], ported_output[6], epsilon)
+    assert_equal(fortran_output[7], ported_output[7], epsilon)
+    assert_equal(fortran_output[8], ported_output[8], 1.0)
+    if ((epsabs < 0) and (epsrel < 0)):
+        assert_equal(fortran_output[9], ported_output[9], 0.0)
+    else:
+        assert_equal(fortran_output[9], ported_output[9] + 1, 0.0)
+
+
 
 
 def assert_equal(fortran, ported, epsilon):
