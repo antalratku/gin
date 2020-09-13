@@ -310,17 +310,17 @@ def test_qagie_special(params):
         assert_equal(fortran_output[9], ported_output[9] + 1, 0.0)
 
 
-def assert_equal(fortran, ported, epsilon):
-    if hasattr(fortran, '__len__'):
-        for i in range(len(fortran)):
-            assert_equal_element(fortran[i], ported[i], epsilon)
+def assert_equal(result_exp, result_actual, epsilon):
+    if hasattr(result_exp, '__len__'):
+        for i in range(len(result_exp)):
+            assert_equal_element(result_exp[i], result_actual[i], epsilon)
     else:
-        assert_equal_element(fortran, ported, epsilon)
+        assert_equal_element(result_exp, result_actual, epsilon)
 
 
-def assert_equal_element(fortran, ported, epsilon):
-    if np.abs(fortran) <= 1.0:
-        assert np.abs(fortran - ported) <= epsilon
+def assert_equal_element(result_exp, result_actual, epsilon):
+    if np.abs(result_exp) <= 1.0:
+        assert np.abs(result_exp - result_actual) <= epsilon
     else:
-        assert np.sign(fortran) == np.sign(ported)
-        assert (np.abs(fortran) - np.abs(ported)) / np.abs(fortran) <= epsilon
+        assert np.sign(result_exp) == np.sign(result_actual)
+        assert (np.abs(result_exp) - np.abs(result_actual)) / np.abs(result_exp) <= epsilon
