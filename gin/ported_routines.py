@@ -1,4 +1,5 @@
 import numpy as np
+from numba import jit
 
 
 def r1mach(i: int):
@@ -21,7 +22,7 @@ def r1mach(i: int):
     elif (i == 5):
         return np.float32(np.log10(2))
     else:
-        raise ValueError(f'r1mach(i): i = {i} is out of bounds.')
+        raise ValueError('r1mach(i): The supplied index is out of bounds.')
 
 
 def d1mach(i: int):
@@ -34,17 +35,17 @@ def d1mach(i: int):
     '''
 
     if (i == 1):
-        return np.finfo(np.float).tiny
+        return np.finfo(np.float64).tiny
     elif (i == 2):
-        return np.finfo(np.float).max
+        return np.finfo(np.float64).max
     elif (i == 3):
-        return np.finfo(np.float).epsneg
+        return np.finfo(np.float64).epsneg
     elif (i == 4):
-        return np.finfo(np.float).eps
+        return np.finfo(np.float64).eps
     elif (i == 5):
-        return np.float(np.log10(2))
+        return np.float64(np.log10(2))
     else:
-        raise ValueError(f'd1mach(i): i = {i} is out of bounds.')
+        raise ValueError('d1mach(i): The supplied index is out of bounds.')
 
 
 def qk15i(f, boun, inf, a, b, *args):
@@ -54,13 +55,13 @@ def qk15i(f, boun, inf, a, b, *args):
 
     xgk = np.array([0.9914553711208126e+00, 0.9491079123427585e+00, 0.8648644233597691e+00, 0.7415311855993944e+00,
                     0.5860872354676911e+00, 0.4058451513773972e+00, 0.2077849550078985e+00, 0.0000000000000000e+00],
-                    dtype=np.float)
+                    dtype=np.float64)
     wgk = np.array([0.2293532201052922e-01, 0.6309209262997855e-01, 0.1047900103222502e+00, 0.1406532597155259e+00,
                     0.1690047266392679e+00, 0.1903505780647854e+00, 0.2044329400752989e+00, 0.2094821410847278e+00],
-                    dtype=np.float)
+                    dtype=np.float64)
     wg = np.array([0.0000000000000000e+00, 0.1294849661688697e+00, 0.0000000000000000e+00, 0.2797053914892767e+00,
                    0.0000000000000000e+00, 0.3818300505051189e+00, 0.0000000000000000e+00, 0.4179591836734694e+00],
-                   dtype=np.float)
+                   dtype=np.float64)
     
     epmach = d1mach(4)
     uflow = d1mach(1)
@@ -71,8 +72,8 @@ def qk15i(f, boun, inf, a, b, *args):
     resabs = 0.0
     resasc = 0.0
 
-    fv1 = np.zeros(shape=7, dtype=np.float)
-    fv2 = np.zeros(shape=7, dtype=np.float)
+    fv1 = np.zeros(shape=7, dtype=np.float64)
+    fv2 = np.zeros(shape=7, dtype=np.float64)
 
     fvalt = 0.0
     
@@ -283,13 +284,13 @@ def qagie(f, bound, inf, epsabs, epsrel, limit, *args):
     http://www.netlib.org/quadpack/qagie.f
     '''
 
-    alist = np.zeros(shape=limit, dtype=np.float)
-    blist = np.zeros(shape=limit, dtype=np.float)
-    elist = np.zeros(shape=limit, dtype=np.float)
+    alist = np.zeros(shape=limit, dtype=np.float64)
+    blist = np.zeros(shape=limit, dtype=np.float64)
+    elist = np.zeros(shape=limit, dtype=np.float64)
     iord = np.zeros(shape=limit, dtype=np.int)
-    res3la = np.zeros(shape=3, dtype=np.float)
-    rlist = np.zeros(shape=limit, dtype=np.float)
-    rlist2 = np.zeros(shape=52, dtype=np.float)
+    res3la = np.zeros(shape=3, dtype=np.float64)
+    rlist = np.zeros(shape=limit, dtype=np.float64)
+    rlist2 = np.zeros(shape=52, dtype=np.float64)
 
     epmach = d1mach(4)
 
