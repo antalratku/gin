@@ -12,7 +12,7 @@ def test_r1mach(i):
     if i <= 5:
         fortran_val = f.r1mach(i)
         ported_val = ported_routines.r1mach(i)    
-        assert(fortran_val == ported_val)
+        assert_equal(fortran_val, ported_val, 0.0)
     else:
         with pytest.raises(Exception):
             ported_val = ported_routines.r1mach(i)
@@ -23,7 +23,7 @@ def test_d1mach(i):
     if i <= 5:
         fortran_val = f.d1mach(i)
         ported_val = ported_routines.d1mach(i)    
-        assert(fortran_val == ported_val)
+        assert_equal(fortran_val, ported_val, 0.0)
     else:
         with pytest.raises(Exception):
             ported_val = ported_routines.d1mach(i)
@@ -67,10 +67,10 @@ def test_qk15i(fun_args, boun_inf, a, b):
     
     epsilon = 1e-4
 
-    assert np.abs(ported_output[0] - fortran_output[0]) < epsilon
-    assert np.abs(ported_output[1] - fortran_output[1]) < epsilon
-    assert np.abs(ported_output[2] - fortran_output[2]) < epsilon
-    assert np.abs(ported_output[3] - fortran_output[3]) < epsilon
+    assert_equal(ported_output[0], fortran_output[0], epsilon)
+    assert_equal(ported_output[1], fortran_output[1], epsilon)
+    assert_equal(ported_output[2], fortran_output[2], epsilon)
+    assert_equal(ported_output[3], fortran_output[3], epsilon)
 
 
 @pytest.mark.parametrize('params', [
@@ -118,13 +118,13 @@ def test_qpsrt(params):
 
     epsilon = 1e-6
 
-    assert ported_output[0] == expected[0]
-    assert np.abs(ported_output[1] - expected[1]) < epsilon
-    assert np.max(np.abs(ported_output[2] - expected[2])) < epsilon
-    assert ported_output[3] == expected[3]
+    assert_equal(ported_output[0], expected[0], 0.0)
+    assert_equal(ported_output[1], expected[1], epsilon)
+    assert_equal(ported_output[2], expected[2], epsilon)
+    assert_equal(ported_output[3], expected[3], 0.0)
 
-    assert fortran_output[0] == (ported_output[0]+1)
-    assert np.abs(fortran_output[1] - ported_output[1]) < epsilon
+    assert_equal(fortran_output[0], (ported_output[0]+1), 0.0)
+    assert_equal(fortran_output[1], ported_output[1], epsilon)
     fiord_out = ported_output[2]
 
     # This part is necessary to test the jupbn = limit + 3 - last part
@@ -139,8 +139,8 @@ def test_qpsrt(params):
         if (fiord_out[i] != 0):
             fiord_out[i] += 1
 
-    assert np.max(np.abs(fortran_output[2] - np.array(fiord_out))) < epsilon
-    assert fortran_output[3] == (ported_output[3]+1)
+    assert_equal(fortran_output[2], np.array(fiord_out), epsilon)
+    assert_equal(fortran_output[3], (ported_output[3]+1), 0.0)
 
 
 @pytest.mark.parametrize('params', [
@@ -178,19 +178,19 @@ def test_qelg(params):
 
     epsilon = 1e-6
 
-    assert ported_output[0] == expected[0]
-    assert np.max(np.abs(ported_output[1] - epstab_exp)) < epsilon
-    assert np.abs(ported_output[2] - expected[2]) < epsilon
-    assert np.abs(ported_output[3] - expected[3]) < epsilon
-    assert np.max(np.abs(ported_output[4] - expected[4])) < epsilon
-    assert ported_output[5] == expected[5]
+    assert_equal(ported_output[0], expected[0], 0.0)
+    assert_equal(ported_output[1], epstab_exp, epsilon)
+    assert_equal(ported_output[2], expected[2], epsilon)
+    assert_equal(ported_output[3], expected[3], epsilon)
+    assert_equal(ported_output[4], expected[4], epsilon)
+    assert_equal(ported_output[5], expected[5], 0.0)
 
-    assert fortran_output[0] == (ported_output[0]+1)
-    assert np.max(np.abs(fortran_output[1] - ported_output[1])) < epsilon
-    assert np.abs(fortran_output[2] - ported_output[2]) < epsilon
-    assert np.abs(fortran_output[3] - ported_output[3]) < epsilon
-    assert np.max(np.abs(fortran_output[4] - ported_output[4])) < epsilon
-    assert fortran_output[5] == ported_output[5]
+    assert_equal(fortran_output[0], (ported_output[0]+1), 0.0)
+    assert_equal(fortran_output[1], ported_output[1], epsilon)
+    assert_equal(fortran_output[2], ported_output[2], epsilon)
+    assert_equal(fortran_output[3], ported_output[3], epsilon)
+    assert_equal(fortran_output[4], ported_output[4], epsilon)
+    assert_equal(fortran_output[5], ported_output[5], 0.0)
 
 
 @pytest.mark.parametrize('iter_cnt', np.arange(1, 100))
@@ -222,12 +222,12 @@ def test_qelg_iter(iter_cnt, fun):
 
     epsilon = 1e-5
 
-    assert n+1 == fn
-    assert np.max(np.abs(epstab - fepstab)) < epsilon
-    assert np.abs(result - fresult) < epsilon
-    assert np.abs(abserr - fabserr) < epsilon
-    assert np.max(np.abs(res3la - fres3la)) < epsilon
-    assert nres == fnres
+    assert_equal(n+1, fn, 0.0)
+    assert_equal(epstab, fepstab, epsilon)
+    assert_equal(result, fresult, epsilon)
+    assert_equal(abserr, fabserr, epsilon)
+    assert_equal(res3la, fres3la, epsilon)
+    assert_equal(nres, fnres, 0.0)
 
 
 @pytest.mark.parametrize('fun_args', [
