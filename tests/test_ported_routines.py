@@ -309,8 +309,6 @@ def test_qagie_special(params):
         assert_equal(fortran_output[9], ported_output[9] + 1, 0.0)
 
 
-
-
 def assert_equal(fortran, ported, epsilon):
     if hasattr(fortran, '__len__'):
         for i in range(len(fortran)):
