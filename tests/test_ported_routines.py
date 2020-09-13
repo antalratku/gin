@@ -229,6 +229,7 @@ def test_qelg_iter(iter_cnt, fun):
     assert np.max(np.abs(res3la - fres3la)) < epsilon
     assert nres == fnres
 
+
 @pytest.mark.parametrize('fun_args', [
     (lambda x: np.exp(-0.5*x**2), ()),
     (lambda x: np.sin(x), ()),

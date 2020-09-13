@@ -154,3 +154,89 @@ def qpsrt(limit, last, maxerr, ermax, elist, iord, nrmax):
     return maxerr, ermax, iord, nrmax
 
 
+@jit(nopython=True)
+def qelg(n, epstab, res3la, nres):
+    '''
+    http://www.netlib.org/quadpack/qelg.f
+    '''
+
+    epmach = d1mach(4)
+    oflow = d1mach(2)
+
+    nres = nres+1
+    abserr = oflow
+    result = epstab[n]
+    if n < 2:
+        abserr = max(abserr, 0.5e+01*epmach*abs(result))
+        return n, epstab, result, abserr, res3la, nres
+    limexp = 49
+    epstab[n+2] = epstab[n]
+    newelm = (n-2)//2
+    epstab[n] = oflow
+    num = n
+    k1 = n
+    for i in range(1, newelm+2):
+        k2 = k1-1
+        k3 = k1-2
+        res = epstab[k1+2]
+        e0 = epstab[k3]
+        e1 = epstab[k2]
+        e2 = res
+        e1abs = abs(e1)
+        delta2 = e2-e1
+        err2 = abs(delta2)
+        tol2 = max(abs(e2),e1abs)*epmach
+        delta3 = e1-e0
+        err3 = abs(delta3)
+        tol3 = max(e1abs,abs(e0))*epmach
+        if not ((err2 > tol2) or (err3 > tol3)):
+            result = res
+            abserr = err2+err3
+            abserr = max(abserr, 0.5e+01*epmach*abs(result))
+            return n, epstab, result, abserr, res3la, nres
+        e3 = epstab[k1]
+        epstab[k1] = e1
+        delta1 = e1-e3
+        err1 = abs(delta1)
+        tol1 = max(e1abs,abs(e3))*epmach
+        if ((err1 <= tol1) or (err2 <= tol2) or (err3 <= tol3)):
+            n = i+i-2
+            break
+        ss = 0.1e+01/delta1+0.1e+01/delta2-0.1e+01/delta3
+        epsinf = abs(ss*e1)
+        if not (epsinf > 0.1e-03):
+            n = i+i-2
+            break
+        res = e1+0.1e+01/ss
+        epstab[k1] = res
+        k1 = k1-2
+        error = err2+abs(res-e2)+err3
+        if (error <= abserr):
+            abserr = error
+            result = res
+    if (n == limexp):
+        n = 2*(limexp//2)
+    ib = 0
+    if ((num//2)*2 != num):
+        ib = 1
+    ie = newelm+2
+    for _ in range(ie):
+        ib2 = ib+2
+        epstab[ib] = epstab[ib2]
+        ib = ib2
+    if (num != n):
+        indx = num-n
+        for i in range(n+1):
+            epstab[i]= epstab[indx]
+            indx = indx+1
+    if (nres < 4):
+        res3la[nres-1] = result # nres is the count of the call -> to use as index, subtract 1
+        abserr = oflow
+        abserr = max(abserr, 0.5e+01*epmach*abs(result))
+        return n, epstab, result, abserr, res3la, nres
+    abserr = abs(result-res3la[2])+abs(result-res3la[1])+abs(result-res3la[0])
+    res3la[0] = res3la[1]
+    res3la[1] = res3la[2]
+    res3la[2] = result
+    abserr = max(abserr,0.5e+01*epmach*abs(result))
+    return n, epstab, result, abserr, res3la, nres            

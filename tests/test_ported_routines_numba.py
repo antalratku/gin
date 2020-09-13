@@ -58,24 +58,23 @@ def test_qk15i_equality(fun_args, boun_inf, a, b):
     ported_output = ported_routines.qk15i(fun, boun, inf, a, b, *args)
     ported_output_numba = ported_routines_numba.qk15i(numba_fun, boun, inf, a, b, XGK, WGK, WG, fv1, fv2, *args)
 
-    epsilon = 1e-6
+    epsilon = 1e-10
     assert_equal(ported_output[0], ported_output_numba[0], epsilon)
     assert_equal(ported_output[1], ported_output_numba[1], epsilon)
     assert_equal(ported_output[2], ported_output_numba[2], epsilon)
     assert_equal(ported_output[3], ported_output_numba[3], epsilon)
-    
 
 
 @pytest.mark.parametrize('input', [
-    ((5, 1, 0, 3.0, np.array([2.0, 1.0, 0.0, 0.0, 0.0]), np.array([0, 0, 0, 0, 0]), 0)),
-    ((5, 2, 0, 2.0, np.array([1.7, 1.0, 0.3, 0.0, 0.0]), np.array([0, 1, 0, 0, 0]), 0)),
-    ((5, 2, 0, 1.2, np.array([0.7, 1.0, 0.5, 0.0, 0.0]), np.array([0, 1, 0, 0, 0]), 0)),
-    ((5, 3, 1, 1.0, np.array([0.7, 0.8, 0.5, 0.2, 0.0]), np.array([1, 0, 2, 0, 0]), 0)),
-    ((5, 3, 1, 1.0, np.array([0.7, 0.7, 0.5, 0.3, 0.0]), np.array([1, 0, 2, 0, 0]), 0)),
-    ((5, 3, 1, 1.0, np.array([0.7, 0.5, 0.5, 0.5, 0.0]), np.array([1, 0, 2, 0, 0]), 0)),
-    ((5, 3, 1, 1.0, np.array([0.7, 0.8, 0.5, 0.2, 0.0]), np.array([1, 0, 2, 0, 0]), 2)),
-    ((5, 3, 1, 1.0, np.array([0.7, 0.8, 0.5, 0.2, 0.0]), np.array([1, 0, 2, 0, 0]), 1)),
-    ((11, 7, 1, 0.81, np.array([0.7, 0.41, 0.6, 0.5, 0.45, 0.43, 0.42, 0.4, 0.0, 0.0, 0.0]), np.array([1, 0, 2, 3, 4, 5, 6, 0, 0, 0, 0]), 0))
+    (5, 1, 0, 3.0, np.array([2.0, 1.0, 0.0, 0.0, 0.0]), np.array([0, 0, 0, 0, 0]), 0),
+    (5, 2, 0, 2.0, np.array([1.7, 1.0, 0.3, 0.0, 0.0]), np.array([0, 1, 0, 0, 0]), 0),
+    (5, 2, 0, 1.2, np.array([0.7, 1.0, 0.5, 0.0, 0.0]), np.array([0, 1, 0, 0, 0]), 0),
+    (5, 3, 1, 1.0, np.array([0.7, 0.8, 0.5, 0.2, 0.0]), np.array([1, 0, 2, 0, 0]), 0),
+    (5, 3, 1, 1.0, np.array([0.7, 0.7, 0.5, 0.3, 0.0]), np.array([1, 0, 2, 0, 0]), 0),
+    (5, 3, 1, 1.0, np.array([0.7, 0.5, 0.5, 0.5, 0.0]), np.array([1, 0, 2, 0, 0]), 0),
+    (5, 3, 1, 1.0, np.array([0.7, 0.8, 0.5, 0.2, 0.0]), np.array([1, 0, 2, 0, 0]), 2),
+    (5, 3, 1, 1.0, np.array([0.7, 0.8, 0.5, 0.2, 0.0]), np.array([1, 0, 2, 0, 0]), 1),
+    (11, 7, 1, 0.81, np.array([0.7, 0.41, 0.6, 0.5, 0.45, 0.43, 0.42, 0.4, 0.0, 0.0, 0.0]), np.array([1, 0, 2, 3, 4, 5, 6, 0, 0, 0, 0]), 0)
 ])
 def test_qpsrt_equality(input):
     limit = input[0]
@@ -96,11 +95,79 @@ def test_qpsrt_equality(input):
     ported_output = ported_routines.qpsrt(limit, last, maxerr, ermax, elist, iord, nrmax)
     ported_output_numba = ported_routines_numba.qpsrt(limit_n, last_n, maxerr_n, ermax_n, elist_n, iord_n, nrmax_n)
 
-    epsilon = 1e-6
+    epsilon = 1e-10
 
     assert_equal(ported_output[0], ported_output_numba[0], epsilon)
     assert_equal(ported_output[1], ported_output_numba[1], epsilon)
     assert_equal(ported_output[2], ported_output_numba[2], epsilon)
     assert_equal(ported_output[3], ported_output_numba[3], epsilon)
 
+
+@pytest.mark.parametrize('input', [
+    (2, np.array([1.0, 2.0, 2.5]), np.array([0.0, 0.0, 0.0]), 0),
+    (3, np.array([3.0, 2.0, 2.5, 2.8, 2.5]), np.array([3.0, 0.0, 0.0]), 1),
+    (4, np.array([3.0, 3.25, 2.5, 2.8, 2.91, 2.8]), np.array([3.0, 3.25, 0.0]), 2),
+    (5, np.array([3.090909, 3.25, 2.97368421, 2.8, 2.91, 2.97, 2.91]), np.array([3.0, 3.25, 2.97368421]), 3),
+])
+def test_qelg_equality(input):
+    n = input[0]
+    n_n = n
+    epstab = np.zeros(52, dtype=np.float)
+    for i in range(len(input[1])):
+        epstab[i] = input[1][i]
+    res3la = input[2]
+    nres = input[3]
+    epstab_n = np.copy(epstab)
+    res3la_n = np.copy(res3la)
+    nres_n = nres
+    
+    ported_output = ported_routines.qelg(n, epstab, res3la, nres)
+    ported_output_numba = ported_routines_numba.qelg(n_n, epstab_n, res3la_n, nres_n)
+
+    epsilon = 1e-10
+
+    assert_equal(ported_output[0], ported_output_numba[0], 0.0)
+    assert_equal(ported_output[1], ported_output_numba[1], epsilon)
+    assert_equal(ported_output[2], ported_output_numba[2], epsilon)
+    assert_equal(ported_output[3], ported_output_numba[3], epsilon)
+    assert_equal(ported_output[4], ported_output_numba[4], epsilon)
+    assert_equal(ported_output[5], ported_output_numba[5], 0.0)
+
+
+@pytest.mark.parametrize('iter_cnt', np.arange(1, 100))
+@pytest.mark.parametrize('funs', [
+    (lambda x: 2 + np.sum(1/(2**np.arange(0, x))), jit(lambda x: 2 + np.sum(1/(2**np.arange(0, x))), nopython=True)),
+    (lambda x: 2 + np.sum((-1/2)**np.arange(0, x)), jit(lambda x: 2 + np.sum((-1/2)**np.arange(0, x)), nopython=True)),
+    (lambda x: np.sin((x+1)*np.pi/8)/((x+1)**2), jit(lambda x: np.sin((x+1)*np.pi/8)/((x+1)**2), nopython=True)),
+])
+def test_qelg_iter_equality(iter_cnt, funs):
+    fun = funs[0]
+    fun_n = funs[1]
+    n = 2
+    n_n = n
+    epstab = np.zeros(52, dtype=np.float)
+    for i in range(3):
+        epstab[i] = fun(i)
+    epstab_n = np.copy(epstab)
+    res3la = np.zeros(3, dtype=np.float)
+    res3la_n = np.copy(res3la)
+    nres = 0
+    nres_n = nres
+    
+    for _ in range(iter_cnt):
+        n, epstab, result, abserr, res3la, nres = ported_routines.qelg(n, epstab, res3la, nres)
+        n_n, epstab_n, result_n, abserr_n, res3la_n, nres_n = ported_routines_numba.qelg(n_n, epstab_n, res3la_n, nres_n)
+        n += 1
+        n_n += 1
+        epstab[n] = fun(n)
+        epstab_n[n_n] = fun_n(n_n)
+
+    epsilon = 1e-10
+
+    assert_equal(n, n_n, 0.0)
+    assert_equal(epstab, epstab_n, epsilon)
+    assert_equal(result, result_n, epsilon)
+    assert_equal(abserr, abserr_n, epsilon)
+    assert_equal(res3la, res3la_n, epsilon)
+    assert_equal(nres, nres_n, 0.0)
 
