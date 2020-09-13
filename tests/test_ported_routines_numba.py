@@ -47,7 +47,7 @@ WG = np.array([0.0000000000000000e+00, 0.1294849661688697e+00, 0.000000000000000
 @pytest.mark.parametrize('b', np.linspace(0.6, 1.0, 3, endpoint=True))
 def test_qk15i_equality(fun_args, boun_inf, a, b):
     fun = fun_args[0]
-    numba_fun = fun_args[1]
+    fun_n = fun_args[1]
     args = fun_args[2]
     boun = boun_inf[0]
     inf = boun_inf[1]
@@ -56,7 +56,7 @@ def test_qk15i_equality(fun_args, boun_inf, a, b):
     fv2 = np.zeros(shape=7, dtype=np.float64)
 
     ported_output = ported_routines.qk15i(fun, boun, inf, a, b, *args)
-    ported_output_numba = ported_routines_numba.qk15i(numba_fun, boun, inf, a, b, XGK, WGK, WG, fv1, fv2, *args)
+    ported_output_numba = ported_routines_numba.qk15i(fun_n, boun, inf, a, b, XGK, WGK, WG, fv1, fv2, *args)
 
     epsilon = 1e-10
     assert_equal(ported_output[0], ported_output_numba[0], epsilon)
@@ -171,3 +171,64 @@ def test_qelg_iter_equality(iter_cnt, funs):
     assert_equal(res3la, res3la_n, epsilon)
     assert_equal(nres, nres_n, 0.0)
 
+
+@pytest.mark.parametrize('fun_args', [
+    (lambda x: np.exp(-0.5*x**2), jit(lambda x: np.exp(-0.5*x**2), nopython=True), ()),
+    (lambda x: np.sin(x), jit(lambda x: np.sin(x), nopython=True), ()),
+    (lambda x: x, jit(lambda x: x, nopython=True), ()),
+    (lambda x: np.sin(x*x), jit(lambda x: np.sin(x*x), nopython=True), ()),
+    (lambda x: np.sin(1/x), jit(lambda x: np.sin(1/x), nopython=True), ()),
+])
+@pytest.mark.parametrize('boun_inf', [
+    (0.0, 2),
+    (0.1, 1),
+    (0.5, 1),
+    (1.5, 1),
+    (-0.1, 1),
+    (-0.5, 1),
+    (-1.5, 1),
+    (0.1, -1),
+    (0.5, -1),
+    (1.5, -1),
+    (-0.1, -1),
+    (-0.5, -1),
+    (-1.5, -1)
+])
+@pytest.mark.parametrize('epsabs', np.arange(1.49e-08, 1.49e-06, 5))
+@pytest.mark.parametrize('epsrel', np.arange(1.49e-08, 1.49e-06, 5))
+@pytest.mark.parametrize('limit', np.arange(1, 50))
+def test_qagie_equality(fun_args, boun_inf, epsabs, epsrel, limit):
+    fun = fun_args[0]
+    fun_n = fun_args[1]
+    args = fun_args[2]
+    bound = boun_inf[0]
+    inf = boun_inf[1]
+    
+    alist = np.zeros(shape=limit, dtype=np.float64)
+    blist = np.zeros(shape=limit, dtype=np.float64)
+    elist = np.zeros(shape=limit, dtype=np.float64)
+    iord = np.zeros(shape=limit, dtype=np.int)
+    res3la = np.zeros(shape=3, dtype=np.float64)
+    rlist = np.zeros(shape=limit, dtype=np.float64)
+    rlist2 = np.zeros(shape=52, dtype=np.float64)
+
+    fv1 = np.zeros(shape=7, dtype=np.float64)
+    fv2 = np.zeros(shape=7, dtype=np.float64)
+
+    ported_output = ported_routines.qagie(fun, bound, inf, epsabs, epsrel, limit, *args)
+    ported_output_numba = ported_routines_numba.qagie(fun_n, bound, inf, epsabs, epsrel, limit,
+                                                      alist, blist, elist, iord, res3la, rlist, rlist2,
+                                                      XGK, WGK, WG, fv1, fv2, *args)
+    
+    epsilon = 1e-10
+
+    assert_equal(ported_output[0], ported_output_numba[0], epsilon)
+    assert_equal(ported_output[1], ported_output_numba[1], epsilon)
+    assert_equal(ported_output[2], ported_output_numba[2], 0.0)
+    assert_equal(ported_output[3], ported_output_numba[3], 0.0)
+    assert_equal(ported_output[4], ported_output_numba[4], epsilon)
+    assert_equal(ported_output[5], ported_output_numba[5], epsilon)
+    assert_equal(ported_output[6], ported_output_numba[6], epsilon)
+    assert_equal(ported_output[7], ported_output_numba[7], epsilon)
+    assert_equal(ported_output[8], ported_output_numba[8], 1.0)
+    assert_equal(ported_output[9], ported_output_numba[9], 0.0)

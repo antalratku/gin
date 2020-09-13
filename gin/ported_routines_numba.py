@@ -242,3 +242,238 @@ def qelg(n, epstab, res3la, nres):
     return n, epstab, result, abserr, res3la, nres            
 
 
+@jit(nopython=True)
+def qagie(f, bound, inf, epsabs, epsrel, limit,
+          alist, blist, elist, iord, res3la, rlist, rlist2,
+          xgk, wgk, wg, fv1, fv2, *args):
+    '''
+    http://www.netlib.org/quadpack/qagie.f
+    '''
+
+    epmach = d1mach(4)
+
+    ier = 0
+    neval = 0
+    last = 0
+    result = 0.0e+00
+    abserr = 0.0e+00
+    alist[0] = 0.0e+00
+    blist[0] = 0.1e+01
+    rlist[0] = 0.0e+00
+    elist[0] = 0.0e+00
+    iord[0] = 0
+
+    if ((epsabs <= 0.0e+00) and (epsrel < max(0.5e+02*epmach, 0.5e-14))):
+        ier = 6
+        return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
+
+    boun = bound
+    if (inf == 2):
+        boun = 0.0e+00
+
+    result, abserr, defabs, resabs = qk15i(f, boun, inf, 0.0e+00, 0.1e+01, xgk, wgk, wg, fv1, fv2, *args)
+    
+    last = 1
+    rlist[0] = result
+    elist[0] = abserr
+    iord[0] = 0
+    dres = abs(result)
+    errbnd = max(epsabs, epsrel*dres)
+    if ((abserr <= 1.0E+02*epmach*defabs) and (abserr>errbnd)):
+        ier = 2
+    if (limit == 1):
+        ier = 1    
+    if ((ier != 0) or ((abserr <= errbnd) and (abserr != resabs)) or (abserr == 0.0E+00 )):
+        neval = 30*last-15
+        if (inf == 2):
+            neval = 2*neval
+        last = 0
+        return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
+    uflow = d1mach(1)
+    oflow = d1mach(2)
+    rlist2[0] = result
+    errmax = abserr
+    maxerr = 0
+    area = result
+    errsum = abserr
+    abserr = oflow
+    nrmax = 0
+    nres = 0
+    ktmin = 0
+    numrl2 = 1
+    extrap = False
+    noext = False
+    ierro = 0
+    iroff1 = 0
+    iroff2 = 0
+    iroff3 = 0
+    ksgn = -1
+    if (dres >= (0.1E+01-0.5E+02*epmach)*defabs):
+        ksgn = 1
+    for last in range(1, limit):
+        a1 = alist[maxerr]
+        b1 = 0.5E+00*(alist[maxerr]+blist[maxerr])
+        a2 = b1
+        b2 = blist[maxerr]
+        erlast = errmax
+        area1, error1, resabs, defab1 = qk15i(f, boun, inf, a1, b1, xgk, wgk, wg, fv1, fv2, *args)
+        area2, error2, resabs, defab2 = qk15i(f, boun, inf, a2, b2, xgk, wgk, wg, fv1, fv2, *args)
+        area12 = area1 + area2
+        erro12 = error1 + error2
+        errsum = errsum + erro12 - errmax
+        area = area + area12 - rlist[maxerr]
+        if ((defab1 != error1) and (defab2 != error2)):
+            if ((abs(rlist[maxerr]-area12) <= 0.1E-04*abs(area12)) and (erro12 >= 0.99E+00*errmax)):
+               if extrap:
+                   iroff2 = iroff2 + 1
+               else:
+                   iroff1 = iroff1 + 1
+            if ((last >= 10) and (erro12 > errmax)):
+                iroff3 = iroff3 + 1
+        rlist[maxerr] = area1
+        rlist[last] = area2
+        errbnd = max(epsabs,epsrel*abs(area))
+        if ((iroff1+iroff2 >= 10) or (iroff3>=20)):
+            ier = 2
+        if (iroff2 >= 5):
+            ierro = 3
+        if (last == limit-1):
+            ier = 1
+        if (max(abs(a1), abs(b2)) <= (0.1E+01+0.1E+03*epmach)*(abs(a2)+0.1E+04*uflow)):
+            ier = 4
+        if (error2 > error1):
+            alist[maxerr] = a2
+            alist[last] = a1
+            blist[last] = b1
+            rlist[maxerr] = area2
+            rlist[last] = area1
+            elist[maxerr] = error2
+            elist[last] = error1
+        else:
+            alist[last] = a2
+            blist[maxerr] = b1
+            blist[last] = b2
+            elist[maxerr] = error1
+            elist[last] = error2
+        maxerr, errmax, iord, nrmax = qpsrt(limit, last, maxerr, errmax, elist, iord, nrmax)
+        if (errsum <= errbnd):
+            result = 0.0e+00
+            for k in range(last+1):
+                result = result + rlist[k]
+            abserr = errsum
+            neval = 30*(last+1) - 15
+            if (inf == 2):
+                neval = 2*neval
+            if (ier > 2):
+                ier = ier - 1
+            return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
+        if (ier != 0):
+            break
+        if (last == 1):
+            small = 0.375e+00
+            erlarg = errsum
+            ertest = errbnd
+            rlist2[1] = area
+        elif (not noext):
+            erlarg = erlarg - erlast
+            if (abs(b1-a1) > small):
+                erlarg = erlarg + erro12
+            if (not extrap):
+                if (abs(blist[maxerr]-alist[maxerr]) > small):
+                    continue
+                extrap = True
+                nrmax = 1
+            if ((ierro != 3) and (erlarg > ertest)):
+                id = nrmax
+                jupbnd = last
+                if (last+1 > (2+limit//2)):
+                    jupbnd = limit+3-(last+1)-1
+                if (jupbnd >= id):
+                    for k in range(id, jupbnd+1):
+                        maxerr = iord[nrmax]
+                        errmax = elist[maxerr]
+                        if (abs(blist[maxerr]-alist[maxerr]) > small):
+                            break
+                        nrmax = nrmax + 1
+                    if (abs(blist[maxerr]-alist[maxerr]) > small):
+                        continue
+            numrl2 = numrl2 + 1
+            rlist2[numrl2] = area
+            numrl2, rlist2, reseps, abseps, res3la, nres = qelg(numrl2, rlist2, res3la, nres)
+            ktmin = ktmin + 1
+            if ((ktmin > 5) and (abserr < 0.1E-02*errsum)):
+                ier = 5
+            if (abseps < abserr):
+                ktmin = 0
+                abserr = abseps
+                result = reseps
+                correc = erlarg
+                ertest = max(epsabs, epsrel*abs(reseps))
+                if (abserr <= ertest):
+                    break
+            if (numrl2 == 0):
+                noext = True
+            if (ier == 5):
+                break
+            maxerr = iord[0]
+            errmax = elist[maxerr]
+            nrmax = 0
+            extrap = False
+            small = small*0.5e+00
+            erlarg = errsum
+    if (abserr != oflow):
+        if ((ier+ierro) != 0):
+            if (ierro == 3):
+                abserr = abserr + correc
+            if (ier == 0):
+                ier = 3
+            if ((result == 0.0e+00) or (area == 0.0e+00)):
+                if (abserr > errsum):
+                    result = 0.0
+                    for k in range(last+1):
+                        result = result + rlist[k]
+                    abserr = errsum
+                    neval = 30*(last+1) - 15
+                    if (inf == 2):
+                        neval = 2*neval
+                    if (ier > 2):
+                        ier = ier - 1
+                    return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
+                if (area == 0.0e+00):
+                    neval = 30*(last+1) - 15
+                    if (inf == 2):
+                        neval = 2*neval
+                    if (ier > 2):
+                        ier = ier - 1
+                    return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
+            elif (abserr/abs(result) > errsum/abs(area)):
+                result = 0.0
+                for k in range(last+1):
+                    result = result + rlist[k]
+                abserr = errsum
+                neval = 30*(last+1) - 15
+                if (inf == 2):
+                    neval = 2*neval
+                if (ier > 2):
+                    ier = ier - 1
+                return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
+        if ((ksgn != -1) or (max(abs(result), abs(area)) > defabs*0.1e-01)):
+            if ((0.1e-01 > result/area) or (result/area > 0.1e+03) or (errsum > abs(area))):
+                ier = 6
+        neval = 30*(last+1) - 15
+        if (inf == 2):
+            neval = 2*neval
+        if (ier > 2):
+            ier = ier - 1
+        return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
+    result = 0.0
+    for k in range(last+1):
+        result = result + rlist[k]
+    abserr = errsum
+    neval = 30*(last+1) - 15
+    if (inf == 2):
+        neval = 2*neval
+    if (ier > 2):
+        ier = ier - 1
+    return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
+
