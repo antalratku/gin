@@ -1,9 +1,7 @@
-import sys, os
-sys.path.insert(0, os.path.abspath('..'))
 import numpy as np
 from numba import jit
 
-@jit
+@jit(nopython=True)
 def d1mach(i: int):
     '''
     http://computer-programming-forum.com/49-fortran/9d39e9771b0d8e20.htm
@@ -85,3 +83,74 @@ def qk15i(f, boun, inf, a, b, xgk, wgk, wg, fv1, fv2, *args):
     if (resabs > uflow / (0.5e+02*epmach)):
         abserr = max((epmach*0.5e+02)*resabs, abserr)
     return result, abserr, resabs, resasc
+
+
+@jit(nopython=True)
+def qpsrt(limit, last, maxerr, ermax, elist, iord, nrmax):
+    '''
+    http://www.netlib.org/quadpack/qpsrt.f
+    '''
+
+    errmax = 0.0
+    errmin = 0.0
+
+    ibeg = 0
+    ido = 0
+    isucc = 0
+    jbnd = 0
+    jupbn = 0
+    k = 0
+
+    if not (last > 1):
+        iord[0] = 0
+        iord[1] = 1
+        maxerr = iord[nrmax]
+        ermax = elist[maxerr]
+        return maxerr, ermax, iord, nrmax    
+    errmax = elist[maxerr]
+    if (nrmax != 0):
+        ido = nrmax
+        for _ in range(ido):
+            isucc = iord[nrmax-1]
+            if errmax <= elist[isucc]:
+                break
+            iord[nrmax] = isucc
+            nrmax = nrmax-1
+    jupbn = last
+    if (last+1 > limit//2+2):
+        jupbn = limit+3-(last+1)-1
+    errmin = elist[last]
+    jbnd = jupbn-1
+    ibeg = nrmax+1
+    if ibeg > jbnd:
+        iord[jbnd] = maxerr
+        iord[jupbn] = last
+        maxerr = iord[nrmax]
+        ermax = elist[maxerr]
+        return maxerr, ermax, iord, nrmax
+    for i in range(ibeg, jbnd+1):
+        isucc = iord[i]
+        if errmax >= elist[isucc]:
+            iord[i-1] = maxerr
+            k = jbnd
+            for _ in range(i, jbnd+1, 1):
+                isucc = iord[k]
+                if errmin < elist[isucc]:
+                    iord[k+1] = last
+                    maxerr = iord[nrmax]
+                    ermax = elist[maxerr]
+                    return maxerr, ermax, iord, nrmax
+                iord[k+1] = isucc
+                k = k-1
+            iord[i] = last
+            maxerr = iord[nrmax]
+            ermax = elist[maxerr]
+            return maxerr, ermax, iord, nrmax
+        iord[i-1] = isucc
+    iord[jbnd] = maxerr
+    iord[jupbn] = last
+    maxerr = iord[nrmax]
+    ermax = elist[maxerr]
+    return maxerr, ermax, iord, nrmax
+
+

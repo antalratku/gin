@@ -65,3 +65,42 @@ def test_qk15i_equality(fun_args, boun_inf, a, b):
     assert_equal(ported_output[3], ported_output_numba[3], epsilon)
     
 
+
+@pytest.mark.parametrize('input', [
+    ((5, 1, 0, 3.0, np.array([2.0, 1.0, 0.0, 0.0, 0.0]), np.array([0, 0, 0, 0, 0]), 0)),
+    ((5, 2, 0, 2.0, np.array([1.7, 1.0, 0.3, 0.0, 0.0]), np.array([0, 1, 0, 0, 0]), 0)),
+    ((5, 2, 0, 1.2, np.array([0.7, 1.0, 0.5, 0.0, 0.0]), np.array([0, 1, 0, 0, 0]), 0)),
+    ((5, 3, 1, 1.0, np.array([0.7, 0.8, 0.5, 0.2, 0.0]), np.array([1, 0, 2, 0, 0]), 0)),
+    ((5, 3, 1, 1.0, np.array([0.7, 0.7, 0.5, 0.3, 0.0]), np.array([1, 0, 2, 0, 0]), 0)),
+    ((5, 3, 1, 1.0, np.array([0.7, 0.5, 0.5, 0.5, 0.0]), np.array([1, 0, 2, 0, 0]), 0)),
+    ((5, 3, 1, 1.0, np.array([0.7, 0.8, 0.5, 0.2, 0.0]), np.array([1, 0, 2, 0, 0]), 2)),
+    ((5, 3, 1, 1.0, np.array([0.7, 0.8, 0.5, 0.2, 0.0]), np.array([1, 0, 2, 0, 0]), 1)),
+    ((11, 7, 1, 0.81, np.array([0.7, 0.41, 0.6, 0.5, 0.45, 0.43, 0.42, 0.4, 0.0, 0.0, 0.0]), np.array([1, 0, 2, 3, 4, 5, 6, 0, 0, 0, 0]), 0))
+])
+def test_qpsrt_equality(input):
+    limit = input[0]
+    limit_n = limit
+    last = input[1]
+    last_n = last
+    maxerr = input[2]
+    maxerr_n = maxerr
+    ermax = input[3]
+    ermax_n = ermax
+    elist = input[4]
+    elist_n = np.copy(elist)
+    iord = input[5]
+    iord_n = np.copy(iord)
+    nrmax = input[6]
+    nrmax_n = nrmax
+
+    ported_output = ported_routines.qpsrt(limit, last, maxerr, ermax, elist, iord, nrmax)
+    ported_output_numba = ported_routines_numba.qpsrt(limit_n, last_n, maxerr_n, ermax_n, elist_n, iord_n, nrmax_n)
+
+    epsilon = 1e-6
+
+    assert_equal(ported_output[0], ported_output_numba[0], epsilon)
+    assert_equal(ported_output[1], ported_output_numba[1], epsilon)
+    assert_equal(ported_output[2], ported_output_numba[2], epsilon)
+    assert_equal(ported_output[3], ported_output_numba[3], epsilon)
+
+
