@@ -18,15 +18,26 @@ WG = np.array([0.0000000000000000e+00, 0.1294849661688697e+00, 0.000000000000000
                dtype=np.float64)
 
 
+@pytest.mark.parametrize('i', [1, 2, 3, 4, 5, 6])
+def test_d1mach(i):
+    if i <= 5:
+        ported_val = ported_routines.d1mach(i)
+        ported_val_numba = ported_routines_numba.d1mach(i)
+        assert_equal(ported_val, ported_val_numba, 0.0)
+    else:
+        with pytest.raises(Exception):
+            ported_val_numba = ported_routines_numba.d1mach(i)
+
+
 @pytest.mark.parametrize('fun_args', [
-    (lambda x: np.exp(-0.5*x**2), jit(lambda x: np.exp(-0.5*x**2), nopython=True), ()),
-    (lambda x: np.abs(x)*np.exp(-0.5*x**2), jit(lambda x: np.abs(x)*np.exp(-0.5*x**2), nopython=True), ()),
-    (lambda x: x*np.exp(-0.5*x**2), jit(lambda x: x*np.exp(-0.5*x**2), nopython=True), ()),
-    (lambda x: np.sin(x)*np.exp(-x**20), jit(lambda x: np.sin(x)*np.exp(-x**20), nopython=True), ()),
-    (lambda x, y: x*np.exp(y*x**2), jit(lambda x, y: x*np.exp(y*x**2), nopython=True), (-0.5,)),
-    (lambda x, y: np.abs(x)*np.exp(y*x**2), jit(lambda x, y: np.abs(x)*np.exp(y*x**2), nopython=True), (-0.5,)),
-    (lambda x, y, z: x*np.exp(y*x**z), jit(lambda x, y, z: x*np.exp(y*x**z), nopython=True), (-0.5, 2)),
-    (lambda x, y, z: np.abs(x)*np.exp(y*x**z), jit(lambda x, y, z: np.abs(x)*np.exp(y*x**z), nopython=True), (-0.5, 2)),
+    (lambda x: np.exp(-0.5*x**2), jit(lambda x, args: np.exp(-0.5*x**2), nopython=True), ()),
+    (lambda x: np.abs(x)*np.exp(-0.5*x**2), jit(lambda x, args: np.abs(x)*np.exp(-0.5*x**2), nopython=True), ()),
+    (lambda x: x*np.exp(-0.5*x**2), jit(lambda x, args: x*np.exp(-0.5*x**2), nopython=True), ()),
+    (lambda x: np.sin(x)*np.exp(-x**20), jit(lambda x, args: np.sin(x)*np.exp(-x**20), nopython=True), ()),
+    (lambda x, y: x*np.exp(y*x**2), jit(lambda x, args: x*np.exp(args[0]*x**2), nopython=True), (-0.5,)),
+    (lambda x, y: np.abs(x)*np.exp(y*x**2), jit(lambda x, args: np.abs(x)*np.exp(args[0]*x**2), nopython=True), (-0.5,)),
+    (lambda x, y, z: x*np.exp(y*x**z), jit(lambda x, args: x*np.exp(args[0]*x**args[1]), nopython=True), (-0.5, 2)),
+    (lambda x, y, z: np.abs(x)*np.exp(y*x**z), jit(lambda x, args: np.abs(x)*np.exp(args[0]*x**args[1]), nopython=True), (-0.5, 2)),
 ])
 @pytest.mark.parametrize('boun_inf', [
     (0.0, 2),
@@ -56,7 +67,7 @@ def test_qk15i_equality(fun_args, boun_inf, a, b):
     fv2 = np.zeros(shape=7, dtype=np.float64)
 
     ported_output = ported_routines.qk15i(fun, boun, inf, a, b, *args)
-    ported_output_numba = ported_routines_numba.qk15i(fun_n, boun, inf, a, b, XGK, WGK, WG, fv1, fv2, *args)
+    ported_output_numba = ported_routines_numba.qk15i(fun_n, boun, inf, a, b, XGK, WGK, WG, fv1, fv2, args)
 
     epsilon = 1e-10
     assert_equal(ported_output[0], ported_output_numba[0], epsilon)
@@ -136,9 +147,9 @@ def test_qelg_equality(input):
 
 @pytest.mark.parametrize('iter_cnt', np.arange(1, 100))
 @pytest.mark.parametrize('funs', [
-    (lambda x: 2 + np.sum(1/(2**np.arange(0, x))), jit(lambda x: 2 + np.sum(1/(2**np.arange(0, x))), nopython=True)),
-    (lambda x: 2 + np.sum((-1/2)**np.arange(0, x)), jit(lambda x: 2 + np.sum((-1/2)**np.arange(0, x)), nopython=True)),
-    (lambda x: np.sin((x+1)*np.pi/8)/((x+1)**2), jit(lambda x: np.sin((x+1)*np.pi/8)/((x+1)**2), nopython=True)),
+    (lambda x: 2 + np.sum(1/(2**np.arange(0, x))), jit(lambda x, args: 2 + np.sum(1/(2**np.arange(0, x))), nopython=True)),
+    (lambda x: 2 + np.sum((-1/2)**np.arange(0, x)), jit(lambda x, args: 2 + np.sum((-1/2)**np.arange(0, x)), nopython=True)),
+    (lambda x: np.sin((x+1)*np.pi/8)/((x+1)**2), jit(lambda x, args: np.sin((x+1)*np.pi/8)/((x+1)**2), nopython=True)),
 ])
 def test_qelg_iter_equality(iter_cnt, funs):
     fun = funs[0]
@@ -160,7 +171,7 @@ def test_qelg_iter_equality(iter_cnt, funs):
         n += 1
         n_n += 1
         epstab[n] = fun(n)
-        epstab_n[n_n] = fun_n(n_n)
+        epstab_n[n_n] = fun_n(n_n, ())
 
     epsilon = 1e-10
 
@@ -173,11 +184,11 @@ def test_qelg_iter_equality(iter_cnt, funs):
 
 
 @pytest.mark.parametrize('fun_args', [
-    (lambda x: np.exp(-0.5*x**2), jit(lambda x: np.exp(-0.5*x**2), nopython=True), ()),
-    (lambda x: np.sin(x), jit(lambda x: np.sin(x), nopython=True), ()),
-    (lambda x: x, jit(lambda x: x, nopython=True), ()),
-    (lambda x: np.sin(x*x), jit(lambda x: np.sin(x*x), nopython=True), ()),
-    (lambda x: np.sin(1/x), jit(lambda x: np.sin(1/x), nopython=True), ()),
+    (lambda x: np.exp(-0.5*x**2), jit(lambda x, args: np.exp(-0.5*x**2), nopython=True), ()),
+    (lambda x: np.sin(x), jit(lambda x, args: np.sin(x), nopython=True), ()),
+    (lambda x: x, jit(lambda x, args: x, nopython=True), ()),
+    (lambda x: np.sin(x*x), jit(lambda x, args: np.sin(x*x), nopython=True), ()),
+    (lambda x: np.sin(1/x), jit(lambda x, args: np.sin(1/x), nopython=True), ()),
 ])
 @pytest.mark.parametrize('boun_inf', [
     (0.0, 2),
@@ -218,7 +229,7 @@ def test_qagie_equality(fun_args, boun_inf, epsabs, epsrel, limit):
     ported_output = ported_routines.qagie(fun, bound, inf, epsabs, epsrel, limit, *args)
     ported_output_numba = ported_routines_numba.qagie(fun_n, bound, inf, epsabs, epsrel, limit,
                                                       alist, blist, elist, iord, res3la, rlist, rlist2,
-                                                      XGK, WGK, WG, fv1, fv2, *args)
+                                                      XGK, WGK, WG, fv1, fv2, args)
     
     epsilon = 1e-10
 

@@ -1,4 +1,4 @@
-import numpy as np
+from math import log10
 from numba import jit
 
 @jit(nopython=True)
@@ -12,21 +12,21 @@ def d1mach(i: int):
     '''
 
     if (i == 1):
-        return np.finfo(np.float64).tiny
+        return 2.0**(-1022)
     elif (i == 2):
-        return np.finfo(np.float64).max
+        return (2-2**(-52)) * 2.0**1023
     elif (i == 3):
-        return np.finfo(np.float64).epsneg
+        return 2.0**(-53)
     elif (i == 4):
-        return np.finfo(np.float64).eps
+        return 2.0**(-52)
     elif (i == 5):
-        return np.float64(np.log10(2))
+        return log10(2.0)
     else:
         raise ValueError('d1mach(i): The supplied index is out of bounds.')
 
 
 @jit(nopython=True)
-def qk15i(f, boun, inf, a, b, xgk, wgk, wg, fv1, fv2, *args):    
+def qk15i(f, boun, inf, a, b, xgk, wgk, wg, fv1, fv2, args):    
     epmach = d1mach(4)
     uflow = d1mach(1)
     dinf = min(1, inf)
@@ -41,9 +41,9 @@ def qk15i(f, boun, inf, a, b, xgk, wgk, wg, fv1, fv2, *args):
     centr = 0.5e+00*(a+b)
     hlgth = 0.5e+00*(b-a)
     tabsc1 = boun+dinf*(0.1e+01-centr)/centr
-    fval1 = f(tabsc1, *args)
+    fval1 = f(tabsc1, args)
     if (inf == 2):
-        fvalt = f(-tabsc1, *args)
+        fvalt = f(-tabsc1, args)
         fval1 = fval1 + fvalt
     fc = (fval1/centr)/centr
     resg = wg[7]*fc
@@ -55,12 +55,12 @@ def qk15i(f, boun, inf, a, b, xgk, wgk, wg, fv1, fv2, *args):
         absc2 = centr+absc
         tabsc1 = boun+dinf*(0.1e+01-absc1)/absc1
         tabsc2 = boun+dinf*(0.1e+01-absc2)/absc2
-        fval1 = f(tabsc1, *args)
-        fval2 = f(tabsc2, *args)
+        fval1 = f(tabsc1, args)
+        fval2 = f(tabsc2, args)
         if (inf == 2):
-            fvalt = f(-tabsc1, *args)
+            fvalt = f(-tabsc1, args)
             fval1 = fval1 + fvalt
-            fvalt = f(-tabsc2, *args)
+            fvalt = f(-tabsc2, args)
             fval2 = fval2 + fvalt
         fval1 = (fval1/absc1)/absc1
         fval2 = (fval2/absc2)/absc2
@@ -245,7 +245,7 @@ def qelg(n, epstab, res3la, nres):
 @jit(nopython=True)
 def qagie(f, bound, inf, epsabs, epsrel, limit,
           alist, blist, elist, iord, res3la, rlist, rlist2,
-          xgk, wgk, wg, fv1, fv2, *args):
+          xgk, wgk, wg, fv1, fv2, args):
     '''
     http://www.netlib.org/quadpack/qagie.f
     '''
@@ -271,7 +271,7 @@ def qagie(f, bound, inf, epsabs, epsrel, limit,
     if (inf == 2):
         boun = 0.0e+00
 
-    result, abserr, defabs, resabs = qk15i(f, boun, inf, 0.0e+00, 0.1e+01, xgk, wgk, wg, fv1, fv2, *args)
+    result, abserr, defabs, resabs = qk15i(f, boun, inf, 0.0e+00, 0.1e+01, xgk, wgk, wg, fv1, fv2, args)
     
     last = 1
     rlist[0] = result
@@ -316,8 +316,8 @@ def qagie(f, bound, inf, epsabs, epsrel, limit,
         a2 = b1
         b2 = blist[maxerr]
         erlast = errmax
-        area1, error1, resabs, defab1 = qk15i(f, boun, inf, a1, b1, xgk, wgk, wg, fv1, fv2, *args)
-        area2, error2, resabs, defab2 = qk15i(f, boun, inf, a2, b2, xgk, wgk, wg, fv1, fv2, *args)
+        area1, error1, resabs, defab1 = qk15i(f, boun, inf, a1, b1, xgk, wgk, wg, fv1, fv2, args)
+        area2, error2, resabs, defab2 = qk15i(f, boun, inf, a2, b2, xgk, wgk, wg, fv1, fv2, args)
         area12 = area1 + area2
         erro12 = error1 + error2
         errsum = errsum + erro12 - errmax
@@ -425,7 +425,10 @@ def qagie(f, bound, inf, epsabs, epsrel, limit,
         if ((ier+ierro) != 0):
             if (ierro == 3):
                 abserr = abserr + correc
-            if (ier == 0):
+            ier_temp = 0
+            for _ in range(ier):
+                ier_temp = ier_temp + 1
+            if (ier_temp == 0):
                 ier = 3
             if ((result == 0.0e+00) or (area == 0.0e+00)):
                 if (abserr > errsum):
@@ -436,14 +439,20 @@ def qagie(f, bound, inf, epsabs, epsrel, limit,
                     neval = 30*(last+1) - 15
                     if (inf == 2):
                         neval = 2*neval
-                    if (ier > 2):
+                    ier_temp = 0
+                    for _ in range(ier):
+                        ier_temp = ier_temp + 1
+                    if (ier_temp > 2):
                         ier = ier - 1
                     return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
                 if (area == 0.0e+00):
                     neval = 30*(last+1) - 15
                     if (inf == 2):
                         neval = 2*neval
-                    if (ier > 2):
+                    ier_temp = 0
+                    for _ in range(ier):
+                        ier_temp = ier_temp + 1
+                    if (ier_temp > 2):
                         ier = ier - 1
                     return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
             elif (abserr/abs(result) > errsum/abs(area)):
@@ -454,7 +463,10 @@ def qagie(f, bound, inf, epsabs, epsrel, limit,
                 neval = 30*(last+1) - 15
                 if (inf == 2):
                     neval = 2*neval
-                if (ier > 2):
+                ier_temp = 0
+                for _ in range(ier):
+                    ier_temp = ier_temp + 1
+                if (ier_temp > 2):
                     ier = ier - 1
                 return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
         if ((ksgn != -1) or (max(abs(result), abs(area)) > defabs*0.1e-01)):
@@ -463,7 +475,10 @@ def qagie(f, bound, inf, epsabs, epsrel, limit,
         neval = 30*(last+1) - 15
         if (inf == 2):
             neval = 2*neval
-        if (ier > 2):
+        ier_temp = 0
+        for _ in range(ier):
+            ier_temp = ier_temp + 1
+        if (ier_temp > 2):
             ier = ier - 1
         return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
     result = 0.0
@@ -473,7 +488,10 @@ def qagie(f, bound, inf, epsabs, epsrel, limit,
     neval = 30*(last+1) - 15
     if (inf == 2):
         neval = 2*neval
-    if (ier > 2):
+    ier_temp = 0
+    for _ in range(ier):
+        ier_temp = ier_temp + 1
+    if (ier_temp > 2):
         ier = ier - 1
     return result, abserr, neval, ier, alist, blist, rlist, elist, iord, last
 
